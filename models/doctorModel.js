@@ -30,7 +30,7 @@ const doctorSchema= new mongoose.Schema({
             select:false
     
         },
-        coverImg: {
+        profileImg: {
             type: String,
             require: true,
             trim: true
