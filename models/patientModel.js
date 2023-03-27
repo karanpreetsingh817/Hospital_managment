@@ -1,4 +1,5 @@
 const mongoose=require("mongoose");
+const bcrypt=require(bcryptjs)
 
 const patientSchema=new mongoose.Schema({
     name:{
@@ -19,9 +20,7 @@ const patientSchema=new mongoose.Schema({
         require:[true,"Plz provide your contract number"],
 
     },
-    patientId:{
-        type:string
-    },
+    
     Status:{
         type:Boolean,
         default:true
@@ -40,9 +39,40 @@ const patientSchema=new mongoose.Schema({
         trim:true,
         require:[true,"must enter strong password"]
     },
+    confirmPassword:{
+        type:String,
+        require:true,
+        trim:true,
+        validate:{
+        validator: function(el){
+            // this is only applicale on Create and Save methods in mongoose not in findAndUpdate
+           return el==this.password
+
+        }
+    },
+        message:"Plz enter same password"
+        
+        
+        
+    },
     photo:{
         type:String
     }
+
+});
+patientSchema.pre('save',async function (next){
+    if(!this.isModified('password')){
+        return next();
+    
+        
+    }
+   
+    this.password= await bcrypt.hash(this.password,18);
+    this.confirmPassword=undefined;
+    next();
+    
+
+
 
 });
 

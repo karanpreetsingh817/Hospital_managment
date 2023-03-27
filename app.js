@@ -12,7 +12,7 @@ app.use("*",(req,res,next)=>{
 });
 
 app.use("/v1/doctor",doctorsRoute);
-// app.use("/v1/patient",patientsRoute);
+app.use("/v1/patient",patientsRoute);
 
 app.all("*",(req,res,next )=>{
     res.status(400).json({
@@ -22,6 +22,7 @@ app.all("*",(req,res,next )=>{
     })
 })
 
+// app.use(globalError);
 
 
 
