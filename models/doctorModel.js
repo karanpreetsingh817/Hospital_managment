@@ -4,6 +4,7 @@ const mongoose=require("mongoose");
 const doctorSchema= new mongoose.Schema({
     name:{
         type:String,
+        unique:true,
         require:[true,"you must enter detail "],
         trim:true
         },

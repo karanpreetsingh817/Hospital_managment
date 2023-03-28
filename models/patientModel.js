@@ -1,5 +1,5 @@
 const mongoose=require("mongoose");
-const bcrypt=require(bcryptjs)
+const bcrypt=require("bcryptjs")
 
 const patientSchema=new mongoose.Schema({
     name:{
@@ -25,7 +25,7 @@ const patientSchema=new mongoose.Schema({
         type:Boolean,
         default:true
     },
-    medicines:[string],
+    medicines:[String],
     reports:{
         type:[String] ,
 
