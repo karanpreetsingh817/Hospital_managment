@@ -1,17 +1,17 @@
-const express=require("express");
-const {allPatient,onePatient,addPatient,updatePatient,deletePatient}=require("./../controlles/patientRouteHandler");
-const {signUp,logIn}=require("./../controlles/signupUser")
+const express = require("express");
+const { allPatient, onePatient, addPatient, updatePatient, deletePatient } = require("../controlles/patientController");
+const { signUp, logIn,protect } = require("./../controlles/signupUser")
 
-const router=express.Router();
+const router = express.Router();
 
 router.route("/").get(allPatient)
 router.post("/signUp", signUp)
 router.get("/logIn", logIn)
 
 router.route("/:id")
-.get(onePatient)
-.post(addPatient)
-.put(updatePatient)
-.delete(deletePatient)
+    .get(protect,onePatient)
+    .post(addPatient)
+    .put(updatePatient)
+    .delete(deletePatient)
 
-module.exports=router;
+module.exports = router;
