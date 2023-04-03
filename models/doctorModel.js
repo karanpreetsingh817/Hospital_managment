@@ -1,47 +1,46 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-
-const doctorSchema= new mongoose.Schema({
-    name:{
-        type:String,
-        require:[true,"you must enter detail "],
-        trim:true
-        },
-        age:{
-            type:Number,
-            require:true
-        },
-        experience:{
-            type:String,
-            require:[true,"doctor must update your experience"],
-            trim:true
-        },
-        specialization:{
-            type:String,
-            require:[true,"Dr. must tell their specialization field so that petient can easily contract"],
-        },
-        description:{
-            type:String,
-            trim:true
-        },
-        dateOfCreation: {
-            type: Date,
-            default: Date.now(),
-            select:false
-    
-        },
-        profileImg: {
-            type: String,
-            require: true,
-            trim: true
-        },
-        appointmentFee: {
-            type: Number,
-            required: [true, 'Must add your Appointment Fee'],
-    
-        }
-
+// here we define svhema for doctor
+const doctorSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        unique: true,
+        require: [true, "you must enter detail "],
+        trim: true
+    },
+    age: {
+        type: Number,
+    },
+    experience: {
+        type: String,
+        require: [true, "doctor must update your experience"],
+        trim: true
+    },
+    specialization: {
+        type: String,
+        require: [true, "Dr. must tell their specialization field so that petient can easily contract"],
+    },
+    description: {
+        type: String,
+        trim: true
+    },
+    dateOfCreation: {
+        type: Date,
+        default: Date.now(),
+        select: false
+    },
+    profileImg: {
+        type: String,
+        require: true,
+        trim: true
+    },
+    appointmentFee: {
+        type: Number,
+        required: [true, 'Must add your Appointment Fee'],
+    }
 });
-const Doctors=mongoose.model("Doctors",doctorSchema);
 
-module.exports=Doctors;
+// Create model named as Doctor from doctorSchema
+const Doctors = mongoose.model("Doctors", doctorSchema);
+
+module.exports = Doctors;
