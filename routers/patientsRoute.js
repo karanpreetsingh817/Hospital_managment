@@ -1,17 +1,33 @@
 const express = require("express");
-const { allPatient, onePatient, addPatient, updatePatient, deletePatient } = require("../controlles/patientController");
-const { signUp, logIn,protect } = require("./../controlles/signupUser")
+const {
+    allPatient,
+    onePatient,
+    addPatient,
+    updatePatient,
+    deletePatient,
+} = require("../controlles/patientController");
+const {
+    signUp,
+    logIn,
+    protect,
+    restrictTo,
+    forgetPassword,
+} = require("../controlles/authrization");
 
 const router = express.Router();
 
-router.route("/").get(allPatient)
-router.post("/signUp", signUp)
-router.get("/logIn", logIn)
+router.route("/").get(protect, restrictTo("doctor"), allPatient);
+router.post("/signUp", signUp);
+router.post("/logIn", logIn);
 
-router.route("/:id")
-    .get(protect,onePatient)
-    .post(addPatient)
-    .put(updatePatient)
-    .delete(deletePatient)
+router.patch("/forgetPassword/:token", forgetPassword);
+
+
+router
+    .route("/:id") 
+    .get(protect, onePatient)
+    .post(protect, restrictTo("doctor"), addPatient)
+    .put(protect, restrictTo("doctor"), updatePatient)
+    .delete(protect, deletePatient);
 
 module.exports = router;
