@@ -34,6 +34,10 @@ const doctorSchema = new mongoose.Schema({
         require: true,
         trim: true
     },
+    role:{
+        type:String,
+        default:"doctor"
+    },
     appointmentFee: {
         type: Number,
         required: [true, 'Must add your Appointment Fee'],
