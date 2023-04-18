@@ -19,7 +19,8 @@ const sendProdError=(err,res)=>{
             status:err.status,
             result:err.message
         })
-    }else{
+    }
+    else{
        
         res.status(500).json({
             statusCode:500,
@@ -41,15 +42,12 @@ const tokenExpHandler=()=> new AppError(401,"JWT token expired!!!Plz login again
 module.exports=(err,req,res,next)=>{
     err.statusCode=err.statusCode || 500;
     err.status=err.status || "server error";
-
     if(process.env.NODE_ENV==="development"){
         sendDevError(err,res);
     }else if(process.env.NODE_ENV=="production"){
         if(err.name==="ValidationError") err= validationHandler()
         if(err.name==="JsonWebTokenError") err=jwtErrHandler()
-        if(err.name==="TokenExpiredError") err=tokenExpHandler()
-
-       
+        if(err.name==="TokenExpiredError") err=tokenExpHandler()   
     sendProdError(err,res);
     }
 };
