@@ -2,21 +2,25 @@ const mongoose=require("mongoose");
 
 const slotSchema=new mongoose.Schema({
     doctorId:{
-        type:String
+        type:mongoose.Schema.objectId,
+        ref:Doctor
        
     },
     patientId:{
-        type:String
+        type:mongoose.Schema.objectId,
+        ref:Patient
        
     },
     bookedAt:{
         type:Date,
         default:Date.now()
     },
-    slotTime:{
-        // proper timing like 10:00-11:00
+    startTime:{
         type:Date,
     },
+    endTime:{
+        type:Date
+    }
     
     
 })

@@ -56,8 +56,9 @@ const doctorSchema = new mongoose.Schema({
         default: true,
         select:false
     },
-    isAvailale:{
-        type:Boolean
+    isAvailble:{
+        type:Boolean,
+        default:false
     },
     password: {
         type: String,
