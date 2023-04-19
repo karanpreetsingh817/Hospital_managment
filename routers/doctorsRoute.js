@@ -1,19 +1,23 @@
 const express = require("express");
-const { todayAvailbleDoctor, allDoctors, myProfile,findByName, isAvailble,updateDoctor, deleteDoctor } = require("../controlles/doctorController");
+const { todayAvailbleDoctor, allDoctors, myProfile,findByName, isAvailble,updateDoctor, deleteDoctor ,getAllAppointment} = require("../controlles/doctorController");
 const {protect,restrictTo,signUp,logIn}=require("../controlles/doctorAuthenticate")
 
 const router = express.Router();
 router.route("/")
     .get(protect,restrictTo("admin"),allDoctors);
 
-// router.get("/findByName",protect, findByName ); //this is for user to get all availble doctors
-router.patch("/isAvailble",protect,restrictTo("doctor"),isAvailble)
+
+router.patch("/isAvailble",protect,isAvailble)
 
 
 router.get("/logIn", logIn);
 
-// router.route("/availbleDoctors")
-//     .get(protect,todayAvailbleDoctor);
+router.route("/availbleDoctors")
+    .get(protect,todayAvailbleDoctor);
+    
+
+router.route("/showAllAppointments")
+.get(protect,getAllAppointment);
 
 
 router.route("/:id")
