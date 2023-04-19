@@ -2,6 +2,7 @@ const catchAsync = require("../utli/catchAsync");
 const AppError = require("../utli/appError");
 const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
+const Slot= require("../models/appoitmentModel");
 
 const filterAllowed=(obj,...allowFields)=>{
     const newObj={};
@@ -42,6 +43,23 @@ exports.myProfile=catchAsync(async(req,res,next)=>{
     });
 });
 
+
+exports.makeappointment=catchAsync(async(req,res,next)=>{
+    const st=req.body.startTime;
+    const  name=req.body.doctorname;
+    const doctor=await Doctor.findOne({name:name});
+    const doctorId=doctor._id;
+    const id=req.User._id;
+    const appointment=await Slot.findAndUpdate({doctorId:doctorId,startTime:st},{patientId:id});
+    if(!appointment){
+        return(next("Sry for incovinence!!! you are not able to make appointment at this momment"))
+    }
+    res.status(200).json({
+        status:"success",
+        message:"Your request for appointment is being under prrocess",
+        result:appointment 
+    });
+})
 
 // exports.updatePatient=catchAsync(async(req,res,next)=>{
 //     res.status(200).json({

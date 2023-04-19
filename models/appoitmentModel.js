@@ -1,14 +1,15 @@
 const mongoose=require("mongoose");
 
+
 const slotSchema=new mongoose.Schema({
     doctorId:{
-        type:mongoose.Schema.objectId,
-        ref:Doctor
+        type:mongoose.Schema.ObjectId,
+        ref:'Doctor'
        
     },
     patientId:{
-        type:mongoose.Schema.objectId,
-        ref:Patient
+        type:mongoose.Schema.ObjectId,
+        ref:'Patient'
        
     },
     bookedAt:{
