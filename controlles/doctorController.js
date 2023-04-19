@@ -1,13 +1,10 @@
 const AppError = require("../utli/appError");
 const catchAsync = require("../utli/catchAsync");
 const Doctor=require("./../models/doctorModel");
-const jwt = require("jsonwebtoken");
-
-
 
 // 1.Route to handle query of all available doctors
 exports.todayAvailbleDoctor = catchAsync(async (req, res,next) => {
-    const doctor=await Doctor.find({ isAvailale:true });
+    const doctor=await Doctor.find({ isAvailble:true });
     if(!doctor){
         return next(new AppError("Sry there is no Doctor availabe today ",400));
     }
@@ -49,8 +46,10 @@ exports.allDoctors = catchAsync(async (req, res) => {
 
 // function to find only one  specific doctor
 exports.findByName = catchAsync(async (req, res) => {
+   
     const {name}=req.body;
-    const doctor=await Doctor.find({name}); //###############################################
+    console.log(name)
+    const doctor=await Doctor.find({name});
     if(!doctor){
         return next(new AppError(`there is no doctore with name ${name} in our Hospital`))
     }
@@ -76,6 +75,26 @@ exports.updateDoctor = catchAsync(async (req, res,next) => {
     });
 });
 
+
+exports.isAvailble=catchAsync(async(req,res,next)=>{
+    const isDoctorAvail=await Doctor.findByIdAndUpdate(req.User._id,{isAvailble:true});
+    if(!isDoctorAvail){
+        return next("There is an erro!! plz try again later",500)
+    }
+    let numOfSlots=7
+    while(numOfSlots>0){
+        slot=await Slot.create({
+            doctorId:req.User._id,
+            patientId:null
+        })
+    }
+
+    res.status(200).json({
+        status: "success",
+        statusCode: 200,
+        result: "Now your status is changed to availble for today"
+    });
+})
 
 // route to handle deleteion of existing doctor from data base
 exports.deleteDoctor = catchAsync(async (req, res,next) => {
