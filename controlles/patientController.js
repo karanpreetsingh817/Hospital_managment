@@ -3,7 +3,7 @@ const AppError = require("../utli/appError");
 const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
 const Slot= require("../models/appoitmentModel");
-
+const Doctor=require("./../models/doctorModel")
 const filterAllowed=(obj,...allowFields)=>{
     const newObj={};
     Object.keys(obj).forEach(el=>{
@@ -50,7 +50,7 @@ exports.makeappointment=catchAsync(async(req,res,next)=>{
     const doctor=await Doctor.findOne({name:name});
     const doctorId=doctor._id;
     const id=req.User._id;
-    const appointment=await Slot.findAndUpdate({doctorId:doctorId,startTime:st},{patientId:id});
+    const appointment=await Slot.findAndUpdate({doctorId:doctorId,startTime:st},{patientId:id,appointmentStatus:'pending'});
     if(!appointment){
         return(next("Sry for incovinence!!! you are not able to make appointment at this momment"))
     }
@@ -111,6 +111,8 @@ exports.todaysPateints=catchAsync(async(req,res,next)=>{
     });
 });
 
+
 // exports.allPatientOfDoctor=catchAsync(async(req,res,next)=>{
     
 // })
+

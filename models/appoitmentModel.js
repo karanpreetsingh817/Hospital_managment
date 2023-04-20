@@ -5,7 +5,6 @@ const slotSchema=new mongoose.Schema({
     doctorId:{
         type:mongoose.Schema.ObjectId,
         ref:'Doctor'
-       
     },
     patientId:{
         type:mongoose.Schema.ObjectId,
@@ -21,8 +20,12 @@ const slotSchema=new mongoose.Schema({
     },
     endTime:{
         type:Date
-    }
-    
+    },
+    appointmentStatus: {
+        type: String,
+        enum: ['empty', 'pending', 'fullfill'],
+        default:'empty'
+      }
     
 })
 const Slot=mongoose.model("Slot",slotSchema);
