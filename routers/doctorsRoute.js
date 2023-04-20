@@ -17,7 +17,7 @@ router.route("/availbleDoctors")
     
 
 router.route("/showAllAppointments")
-.get(protect,getAllAppointment);
+    .get(protect,getAllAppointment);
 
 
 router.route("/:id")

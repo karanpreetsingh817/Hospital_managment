@@ -33,9 +33,7 @@ const patientSchema = new mongoose.Schema({
     default: "user"
 
   },
-  medicines: {
-    type: [String],
-  },
+  
   email: {
     type: String,
     trim: true,
