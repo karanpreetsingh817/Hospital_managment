@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
 const bcrypt=require("bcryptjs");
 const crypto = require("crypto");
-const email = require("../utli/email");
 
 // here we define svhema for doctor
 const doctorSchema = new mongoose.Schema({
     name: {
         type: String,
         // unique: true,
-        require: [true, "you must enter detail "],
+        required: [true, "you must enter detail "],
         trim: true
     },
     email:{
@@ -22,7 +21,7 @@ const doctorSchema = new mongoose.Schema({
     },
     experience: {
         type: String,
-        require: [true, "doctor must update your experience"],
+        required: [true, "doctor must update your experience"],
         trim: true
     },
     specialization: {
@@ -84,7 +83,12 @@ const doctorSchema = new mongoose.Schema({
       },
     passwordResetExpires: {
         type: Date
-      },
+      }
+    
+},
+{
+    toJSON:{ virtuals:true},
+    toObject:{virtuals:true }
 });
 
 doctorSchema.pre("save", async function (next) {
@@ -93,9 +97,6 @@ doctorSchema.pre("save", async function (next) {
     this.confirmPassword = undefined;
     next();
 });
-
-
-
 
 doctorSchema.pre("save",function(next){
     if(!this.isModified("password")||this.isNew) return next()
@@ -108,12 +109,18 @@ doctorSchema.pre(/^find/, function(next){
     next();
   });
 
-  // here we define a function which is applicable for all documents to check whether password enter by user is currect or not
+doctorSchema.virtual("reviews",{
+    ref:'Review',
+    foreignField:'doctorId',
+    localField:'_id'
+});
+
+// here we define a function which is applicable for all documents to check whether password enter by user is currect or not
 doctorSchema.methods.correctUser = async function (candidatePassword, userPassword) {
     return  await bcrypt.compare(candidatePassword, userPassword);
 }
    
-   // Here we check whether password is changed  or not after token is issued
+// Here we check whether password is changed  or not after token is issued
 doctorSchema.methods.validatePass = function (tokenIssueDate) {
     if (this.passwordChangeAt) {
         const changeAt = parseInt(this.passwordChangeAt.getTime() / 1000, 10);
@@ -122,7 +129,7 @@ doctorSchema.methods.validatePass = function (tokenIssueDate) {
     return false;
    };
    
-   // Create function to create reset password string
+// Create function to create reset password string
 doctorSchema.methods.createPassResetToken = function () {
     const resetToken = crypto.randomBytes(32).toString('hex');
     this.passwordResetToken = crypto

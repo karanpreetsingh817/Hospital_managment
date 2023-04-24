@@ -2,8 +2,8 @@ const catchAsync = require("../utli/catchAsync");
 const AppError = require("../utli/appError");
 const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
-const Slot= require("../models/appoitmentModel");
-const Doctor=require("./../models/doctorModel")
+const handlerFactory=require("./handlerFactory")
+
 const filterAllowed=(obj,...allowFields)=>{
     const newObj={};
     Object.keys(obj).forEach(el=>{
@@ -15,26 +15,42 @@ const filterAllowed=(obj,...allowFields)=>{
 }
 
 
-// handler function to handle req of getting details of all patients 
-exports.allPatient=catchAsync(async(req,res,next)=>{
+exports.setData=(req,res,next)=>{
+    data={
+        name: req.body.name,
+        age: req.body.age,
+        address: req.body.address,
+        bloodGroup: req.body.bloodGroup,
+        phoneNumber: req.body.phoneNumber,
+        email: req.body.email,
+        password: req.body.password,
+        confirmPassword: req.body.confirmPassword,
+        reports:req.body.reports
+    }
+    req.data=data;
+    next();
+}
+/*  tHIS  route is handle request of Details of all Patients
+    This request is noly valid for Admin
+*/
+exports.getAllPatients=catchAsync(async(req,res,next)=>{
     let features=new Features(Patient.find(),req.query).filter().sort().fieldlimits().pagination();
     result = await features.query; 
     if(!result){
-        return next(new Error("404 Not Found",404))
+        return next(new Error(404,"404 Not Found"))
     }
-    // const totalNum=result.length();
     res.status(200).json({
         status: "Successfull",
         statusCode:200,
         message:"Here details Of all Patients",
-        // total:totalNum,
         result:result
     });
 })
 
-
-// function to handle req for particular patient
-exports.myProfile=catchAsync(async(req,res,next)=>{
+/*  This route  is called when patient want to view his 
+    details This  route is only for patient route.
+*/
+exports.getMyProfile=catchAsync(async(req,res,next)=>{
     res.status(200).json({
         status:"successfull",
         statusCode:200,
@@ -43,35 +59,11 @@ exports.myProfile=catchAsync(async(req,res,next)=>{
     });
 });
 
-
-exports.makeappointment=catchAsync(async(req,res,next)=>{
-    const st=req.body.startTime;
-    const  name=req.body.doctorname;
-    const doctor=await Doctor.findOne({name:name});
-    const doctorId=doctor._id;
-    const id=req.User._id;
-    const appointment=await Slot.findAndUpdate({doctorId:doctorId,startTime:st},{patientId:id,appointmentStatus:'pending'});
-    if(!appointment){
-        return(next("Sry for incovinence!!! you are not able to make appointment at this momment"))
-    }
-    res.status(200).json({
-        status:"success",
-        message:"Your request for appointment is being under prrocess",
-        result:appointment 
-    });
-})
-
-// exports.updatePatient=catchAsync(async(req,res,next)=>{
-//     res.status(200).json({
-//         status:"successfull",
-//         statusCode:200,
-//         result:"update patient successfully"
-//     });
-// });
-
-
-// fumctiomn to update the data of exsiting patient
-exports.updateMe=catchAsync(async(req,res,next)=>{
+/*  This route handle request of updating details of
+    Patient.This route is only for updating name and 
+    email of patient.
+*/
+exports.updatePatient=catchAsync(async(req,res,next)=>{
     const {password,confirmPassword}=req.body;
     if(password || confirmPassword){
         return next(new AppError(401,"this Route is not availale for updating password. For updating Password Plz visit /updatePassword route."))
@@ -88,21 +80,15 @@ exports.updateMe=catchAsync(async(req,res,next)=>{
     });
 });
 
+/*  this route is handle request of delete patients data from
+    data base.Login must required in this case.
+*/
+exports.deletePatient=handlerFactory.deleteOne(Patient);
 
-// function  which hamndle delete request of exsiting patient
-exports.deletePatient=catchAsync(async(req,res,next)=>{
- user=await Patient.findByIdAndUpdate(req.User._id,{active:false});
-    res.status(200).json({
-        status:"successfull",
-        statusCode:200,
-        message:"patient deleted successfully",
-        result:"delete successfully"
-    });
-});
-
-
-// function handle to route to find all patients for todays appointment
-exports.todaysPateints=catchAsync(async(req,res,next)=>{
+/*  This routeHandler is handle request for getting request  for specific doctor 
+    to get all patients details whome get appointed
+*/
+exports.getTodaysPateints=catchAsync(async(req,res,next)=>{
     res.status(200).json({
         status:"successfull",
         statusCode:200,
@@ -110,9 +96,3 @@ exports.todaysPateints=catchAsync(async(req,res,next)=>{
         result:"todays patients"
     });
 });
-
-
-// exports.allPatientOfDoctor=catchAsync(async(req,res,next)=>{
-    
-// })
-
