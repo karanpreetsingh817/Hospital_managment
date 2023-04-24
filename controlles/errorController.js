@@ -31,14 +31,10 @@ const sendProdError=(err,res)=>{
 }
 
 const validationHandler=()=> new AppError(401,"Plz fill all detilas and email which is not registered")
-
-const jwtErrHandler=()=> new AppError(400,"JWT token is not valid ")
-
+const jwtErrHandler=()=> new AppError(401,"JWT token is not valid ")
 const tokenExpHandler=()=> new AppError(401,"JWT token expired!!!Plz login again")
-
-
  
- //this function is used to handle glober error routes
+//this function is used to handle glober error routes
 module.exports=(err,req,res,next)=>{
     err.statusCode=err.statusCode || 500;
     err.status=err.status || "server error";

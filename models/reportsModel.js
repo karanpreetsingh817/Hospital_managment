@@ -23,7 +23,6 @@ const reportSchema= new mongoose.Schema({
         type:String,
         require:[true,"Plz update medicines here so that patient can chgeck their medicines name from any where and at any time"]
     }
-    
 });
 
 const Report=mongoose.model("Report",reportSchema);

@@ -1,41 +1,28 @@
 const express = require("express");
-const{todayAvailbleDoctor,findByName}=require("./../controlles/doctorController");
-const {allPatient,myProfile,deletePatient,updateMe} = require("../controlles/patientController");
-
-const {signUp,logIn,protect,restrictTo,forgetPassword,updatePassword} = require("../controlles/patientAuthenticate");
-
-// const {addReview,updateReview}=require("./../controlles/reviewController");
-const {allReports,addReport}=require("./../controlles/reportController");
+const Auth = require("../controlles/patientAuthenticate");
+const{getTodayAvailbleDoctors,getDoctorByName}=require("./../controlles/doctorController");
+const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData} = require("../controlles/patientController");
+const {getAllReports,postReport}=require("./../controlles/reportController");
 
 const router = express.Router();
 
-router.route("/").get(protect, restrictTo("admin"),allPatient);
-router.get("/findByName",protect,findByName)
-router.post("/signUp", signUp);
-router.post("/logIn", logIn);
 
-router.get("/findByName",protect, findByName );
+router.post("/signUp",setData, Auth.signUp);
+router.post("/logIn", Auth.logIn);
+router.post("/addReport",Auth.restrictTo("doctor"),postReport)
 
-router.route("/availbleDoctors")
-    .get(protect,todayAvailbleDoctor);
+router.get("/",Auth.protect, Auth.restrictTo("admin"),getAllPatients);
+router.get("/findByName",Auth.protect,getDoctorByName)
+router.get("/availbleDoctors",Auth.protect,getTodayAvailbleDoctors);
+router.get("/getReports",Auth.protect,getAllReports)
 
-router.patch("/forgetPassword/:token", forgetPassword);
-router.patch("/updatePassword", protect, updatePassword)
-
-// router.route("/addReview")
-//     .post(protect,addReview)
-//     .patch(protect,updateReview)
-
-router.route("/getReports")
-    .get(protect,allReports)
-    
-    router.route("/addReport")
-    .post(restrictTo("doctor"),addReport)
+router.patch("/forgetPassword/:token", Auth.forgetPassword);
+router.patch("/updatePassword", Auth.protect, Auth.updatePassword)
 
 router.route("/:id")
-    .get(protect, myProfile)
-    .post(protect, restrictTo("doctor"), signUp)
-    .patch(protect, updateMe)
-    .delete(protect, deletePatient)
+    .get(Auth.protect, getMyProfile)
+    .post(Auth.protect, Auth.restrictTo("doctor"), Auth.signUp)
+    .patch(Auth.protect, updatePatient)
+    .delete(Auth.protect, deletePatient)
 
 module.exports = router;

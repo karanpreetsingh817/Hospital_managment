@@ -16,18 +16,39 @@ const slotSchema=new mongoose.Schema({
         default:Date.now()
     },
     startTime:{
-        type:Date,
+        type:String
     },
-    endTime:{
-        type:Date
+    timeStamp:{
+        type:Number
     },
     appointmentStatus: {
         type: String,
-        enum: ['empty', 'pending', 'fullfill'],
+        enum: ['empty', 'pending', 'fullfill',"cancle"],
         default:'empty'
+    },
+    status: {
+        type: String,
+        enum: ['done', 'cancled', 'upcoming'],
+        default:'upcoming'
       }
     
-})
+});
+
+slotSchema.pre('findMany', function(next) {
+    this.find({ patientId: { $ne: null } }); 
+    next();
+  });
+
+  slotSchema.pre('findOne', function(next) {
+    this.find({ patientId: { $ne: null } }); 
+    next();
+  });
+
+slotSchema.pre("find", function(next){
+    this.find({ patientId: { $ne: null } }); 
+    next();
+  });
+
 const Slot=mongoose.model("Slot",slotSchema);
 
 module.exports=Slot;
