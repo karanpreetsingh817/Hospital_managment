@@ -13,5 +13,4 @@ router.route("/:patientId")
     .get(authFactory.protect(Doctor),reportController.restrictTo("doctor"),reportController.getReportHistory)
     .post(authFactory.protect(Doctor),reportController.restrictTo("doctor"),reportController.postReport);
 
-
 module.exports=router;

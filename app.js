@@ -10,11 +10,12 @@ const rateLimit=require("express-rate-limit");
 const helmet=require("helmet");
 const mongoSanitize=require("express-mongo-sanitize");
 const xss=require("xss-clean");
-
+const cors=require("cors")
 
 dotenv.config({ path: './config.env' });
 
 const app = express();
+app.use(cors())
 const limiter=rateLimit({
     max:90,
     windowMs:60*60*1000,
@@ -22,6 +23,7 @@ const limiter=rateLimit({
 });
 
 app.use(require('body-parser').json());
+app.use(express.urlencoded({extended: true})); 
 app.use(mongoSanitize());
 
 app.use(xss());
@@ -48,8 +50,6 @@ app.use("/v1/appointment",appointmentRoute)
 app.use("/v1/doctor", doctorsRoute);
 app.use("/v1/patient", patientsRoute);
 
-
-
 // this gloal middleware is  handle unHandeled routes 
 app.all("*", (req, res, next) => {
     res.status(400).json({
@@ -58,7 +58,6 @@ app.all("*", (req, res, next) => {
         result: `${req.originalUrl} is no longer to accessable`
     });
 });
-
 
 // global error handler middleware
 app.use(globalErrorHandler);
