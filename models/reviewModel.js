@@ -29,7 +29,6 @@ const reviewSchema=new mongoose.Schema({
         ref:"Doctor",
         required:[true,"Review Must Belong To Doctor"]
     },
-   
 },
 {
     toJSON:{ virtuals:true},
@@ -47,7 +46,5 @@ reviewSchema.pre(/^find/, function(next){
     next()
 });
 
-
 const Review=mongoose.model("Review",reviewSchema);
-
 module.exports=Review;

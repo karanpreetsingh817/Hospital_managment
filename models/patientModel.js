@@ -33,7 +33,6 @@ const patientSchema = new mongoose.Schema({
     default: "user"
 
   },
-  
   email: {
     type: String,
     trim: true,
@@ -65,7 +64,7 @@ const patientSchema = new mongoose.Schema({
   passwordResetExpires: {
     type: Date
   },
-  photo: {
+  profilePhoto: {
     type: String,
   },
   reports:[
@@ -78,9 +77,6 @@ const patientSchema = new mongoose.Schema({
     type:Date,
     default:Date.now(),
   },
-  // appoinmetId:{
-
-  // }
 });
 
 // here we use hash and store hash of our password into data base

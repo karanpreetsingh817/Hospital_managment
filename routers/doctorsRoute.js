@@ -4,13 +4,10 @@ const reviewRoute=require("./reviewRoute");
 const { getAllDoctors, getMyProfile,updateDoctor, deleteDoctor,setData } = require("../controlles/doctorController");
 
 const router = express.Router();
-router.get("/",Auth.protect,Auth.restrictTo("admin"),getAllDoctors);
+router.get("/",Auth.protect, Auth.restrictTo("admin"),getAllDoctors);
 router.post("/signup",Auth.protect, Auth.restrictTo("admin"),setData,Auth.signUp)
 router.use("/:doctorId/reviews",reviewRoute)
 router.get("/logIn", Auth.logIn);
-
-
-
 
 router.route("/:id")
     .get(Auth.protect,Auth.restrictTo("doctor"),getMyProfile)

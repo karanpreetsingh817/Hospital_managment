@@ -63,7 +63,7 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, "must enter strong password"],
-      },
+    },
     confirmPassword: {
         type: String,
         required: true,
@@ -74,17 +74,16 @@ const doctorSchema = new mongoose.Schema({
           },
         },
         message: "Plz enter same password",
-      },
+    },
     passwordResetToken: {
         type: String
-      },
+    },
     passwordChangeAt: {
         type: Date
-      },
+    },
     passwordResetExpires: {
         type: Date
-      }
-    
+    }   
 },
 {
     toJSON:{ virtuals:true},
@@ -140,7 +139,6 @@ doctorSchema.methods.createPassResetToken = function () {
     return resetToken;
 }
    
-  
 // Create model named as Doctor from doctorSchema
 const Doctor = mongoose.model("Doctor", doctorSchema);
 
