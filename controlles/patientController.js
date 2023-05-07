@@ -16,6 +16,9 @@ const filterAllowed=(obj,...allowFields)=>{
 
 
 exports.setData=(req,res,next)=>{
+    if(!req.body.name || req.body.age ||req.body.address || req.body.bloodGroup || req.body.phoneNumber || req.body.email || req.body.password || req.body.confirmPassword){
+        return(next(new AppError(404,"all fields are required! so kindly fill all fields")))
+    }
     data={
         name: req.body.name,
         age: req.body.age,
@@ -25,8 +28,9 @@ exports.setData=(req,res,next)=>{
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        reports:req.body.reports
+        
     }
+    console.log(data)
     req.data=data;
     next();
 }

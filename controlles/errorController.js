@@ -5,19 +5,20 @@ const sendDevError=(err,res)=>{
         err,
         statusCode:err.statusCode,
         status:err.status,
-        result:err.message,
-        stack:err.stack
+        message:err.message,
+        result:err.stack
     })
 };
 
 const sendProdError=(err,res)=>{
-    console.log(err.name)
+   
     if(err.isOperational){
         res.status(err.statusCode).json({
-            name:err.name,
+            
             statusCode:err.statusCode,
             status:err.status,
-            result:err.message
+            message:err.message,
+            result:err.name
         })
     }
     else{

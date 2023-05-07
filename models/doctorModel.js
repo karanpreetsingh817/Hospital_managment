@@ -19,6 +19,11 @@ const doctorSchema = new mongoose.Schema({
     age: {
         type: Number,
     },
+    qualification:{
+        type:String,
+        required:true
+
+    },
     experience: {
         type: String,
         required: [true, "doctor must update your experience"],
@@ -38,7 +43,8 @@ const doctorSchema = new mongoose.Schema({
         select: false
     },
     profileImg: {
-        type: String,
+        url:String,
+        public_id: String,
         // require: true,
         // trim: true
     },
@@ -63,6 +69,11 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, "must enter strong password"],
+    },
+    qualification:{
+        type:String,
+        required:[true,"Must enter your qualification so that other can see "],
+        trim:true
     },
     confirmPassword: {
         type: String,

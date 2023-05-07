@@ -1,25 +1,29 @@
-const catchAsync=require("../utli/catchAsync");
+const catchAsync = require("../utli/catchAsync");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utli/appError");
 const sendEmail = require("../utli/email");
 const { promisify } = require("util");
+
+
+
 
 const signToken = (id) =>
     jwt.sign({ id }, process.env.SECERT_STR, {
         expiresIn: process.env.EXPIRE_IN,
     });
 
-const sendToken=(res,user)=>{
+const sendToken = (res, user) => {
     const token = signToken(user._id);
-    res.cookie("Jwt",token,{
-        httpOnly:true
+    res.cookie("Jwt", token, {
+        httpOnly: true
     })
-    user.password=undefined;
+    user.password = undefined;
     res.status(200).json({
         status: "Successfull !",
         statusCode: 200,
-        message:"you loged in successfully",
-        result:token
+        message: "you loged in successfully",
+        result: token,
+        user
     });
 }
 /*  
@@ -27,35 +31,36 @@ const sendToken=(res,user)=>{
     All validations, Password hashing and security related Best practices 
     implimented Here.
 */
-exports.signUp=(model)=>catchAsync(async (req, res, next) => {
+exports.signUp = (model) => catchAsync(async (req, res, next) => {
+    console.log(req.data.profileImg);
     const user = await model.create(req.data);
+    console.log("done ho gya bhai")
 
     if (!user) {
         return next(new AppError(404, "errror ............"));
     }
-    sendToken(res,user);
+    sendToken(res, user);
 });
 
 /*  This is logIn route Controller Both for all user.
     Whenever existing Patient try to logIn inn Our system
     Then this RoutHandler comes into Picture
 */
-exports.logIn=(model)=>catchAsync(async (req, res, next) => {
+exports.logIn = (model) => catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
-    console.log(req.body)
 
     if (!email || !password) {
-        return next(new AppError(404, "plz provide email and password" ));
+        return next(new AppError(404, "plz provide email and password"));
     }
     const user = await model.findOne({ email }).select("+password");
     if (!user) {
-        return next(new AppError( 404,"user not found"));
+        return next(new AppError(404, "user not found"));
     }
     isVarified = await user.correctUser(password, user.password);
     if (!isVarified) {
         return next(new AppError(404, "invalid password"));
     }
-    sendToken(res,user,"You login  successfully");
+    sendToken(res, user, "You login  successfully");
 });
 
 /*  This Route handler Actully check Who req in our system, Actully 
@@ -63,9 +68,9 @@ exports.logIn=(model)=>catchAsync(async (req, res, next) => {
     successfully then only further Request is processed  otherWise throw
     an Error
 */
-exports.protect=(model)=>catchAsync(async (req, res, next) => {
+exports.protect = (model) => catchAsync(async (req, res, next) => {
     let token;
-    if (req.headers.authentication  && req.headers.authentication.startsWith("Bearer")) {
+    if (req.headers.authentication && req.headers.authentication.startsWith("Bearer")) {
         token = req.headers.authentication.split(" ")[1];
     }
     if (!token) {
@@ -73,11 +78,11 @@ exports.protect=(model)=>catchAsync(async (req, res, next) => {
     }
     const decode = await promisify(jwt.verify)(token, process.env.SECERT_STR);
     const isUser = await model.findById(decode.id);
-    if (!isUser){
-        return next(new AppError( 400,"User  belonging to token is not exists"));
+    if (!isUser) {
+        return next(new AppError(400, "User  belonging to token is not exists"));
     }
-    if (await isUser.validatePass(decode.iat)){
-        return next( new AppError( 400,"User recentely Changed password!! Plz logIn again"));
+    if (await isUser.validatePass(decode.iat)) {
+        return next(new AppError(400, "User recentely Changed password!! Plz logIn again"));
     }
     req.User = isUser;
     next();
@@ -100,7 +105,7 @@ exports.protect=(model)=>catchAsync(async (req, res, next) => {
     want to reset hie?her password. An password Reset link
     is genrated and send to Registered Email.
 */
-exports.forgetPassword=(model)=> catchAsync(async (req, res, next) => {
+exports.forgetPassword = (model) => catchAsync(async (req, res, next) => {
     const user = await model.findOne({ email: req.body.email });
     if (!user) {
         return next(new AppError(404, "Email is not registered"))
@@ -120,39 +125,39 @@ exports.forgetPassword=(model)=> catchAsync(async (req, res, next) => {
 /*  After sending Password reset token, Whenever user click on That link,
     this Route will be called and user easily set Their new password .
 */
-exports.resetPassword=(model)=>catchAsync(async(req, res, next) => {
+exports.resetPassword = (model) => catchAsync(async (req, res, next) => {
     resetHashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
-    const user=await model.findOne({passwordResetToken:resetHashedToken, passwordResetExpires:{$gt:Date.now()}});
-    if(!user){
-        return next(new AppError(401,"your token is expired plz make request for reset password again"))
+    const user = await model.findOne({ passwordResetToken: resetHashedToken, passwordResetExpires: { $gt: Date.now() } });
+    if (!user) {
+        return next(new AppError(401, "your token is expired plz make request for reset password again"))
     }
-    user.password=req.password;
-    user.confirmPassword=undefined;
-    user.passwordResetToken=undefined;
-    user.passwordResetToken=undefined;
-    user.passwordResetExpires=undefined;
+    user.password = req.password;
+    user.confirmPassword = undefined;
+    user.passwordResetToken = undefined;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
     await user.save();
-    sendToken(res,user);
+    sendToken(res, user);
 });
 
 /*  If doctor Want to Update his password and he/she know 
     their current password then only able to Update Thier 
     password
 */
-exports.updatePassword=(model)=>catchAsync(async(req,res,next)=>{
-    const user=await model.findById(req.User.id).select("+password");
+exports.updatePassword = (model) => catchAsync(async (req, res, next) => {
+    const user = await model.findById(req.User.id).select("+password");
     isVarified = await user.correctUser(req.body.currentPassword, user.password);
     if (!isVarified) {
         return next(new AppError(404, "Plz try with different password not with current one "));
     }
-    user.password=req.body.password;
-    user.confirmPassword=req.body.confirmPassword;
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
     await user.save();
     res.status(200).json({
-        status:"success",
-        statusCode:200,
-        message:"your new password updated successfully",
-        result:user
+        status: "success",
+        statusCode: 200,
+        message: "your new password updated successfully",
+        result: user
     })
 })
 
