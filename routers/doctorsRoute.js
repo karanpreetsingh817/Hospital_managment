@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/",Auth.protect, Auth.restrictTo("admin"),setData,getAllDoctors);
 router.post("/upload", firm(),uploadImg);
-router.post("/signup",Auth.restrictTo("admin"),setData,Auth.signUp)
+router.post("/signup",setData,Auth.signUp);
 router.use("/:doctorId/reviews",reviewRoute)
 router.post("/logIn", Auth.logIn);
 
