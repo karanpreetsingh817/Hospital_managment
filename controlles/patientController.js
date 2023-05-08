@@ -3,6 +3,25 @@ const AppError = require("../utli/appError");
 const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
 const handlerFactory=require("./handlerFactory")
+const cloudinary = require("cloudinary");
+
+
+exports.uploadImg=catchAsync(async(req,res,next)=>{
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_NAME,
+        api_key: process.env.CLOUDINARY_KEY,
+        api_secret: process.env.CLOUDINARY_SECRET
+    })
+    console.log(req.files.profileImg.path)
+    const result=await cloudinary.uploader.upload(req.files.profileImg.path);
+    res.json({
+        url:result.secure_url,
+        public_id:result.public_id
+    });
+         
+  
+})
+
 
 const filterAllowed=(obj,...allowFields)=>{
     const newObj={};
@@ -16,17 +35,19 @@ const filterAllowed=(obj,...allowFields)=>{
 
 
 exports.setData=(req,res,next)=>{
+    
     data={
         name: req.body.name,
         age: req.body.age,
         address: req.body.address,
         bloodGroup: req.body.bloodGroup,
-        phoneNumber: req.body.phoneNumber,
+        phoneNumber: req.body.mobile,
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        reports:req.body.reports
+        profileImg:req.body.image
     }
+    console.log(data)
     req.data=data;
     next();
 }

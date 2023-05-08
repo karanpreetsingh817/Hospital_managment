@@ -1,7 +1,25 @@
 const catchAsync = require("../utli/catchAsync");
 const AppError = require("../utli/appError");
 const Doctor=require("./../models/doctorModel");
-const handlerFactory=require("./handlerFactory");
+const handlerFactory=require("./handlerFactory"); 
+const cloudinary = require("cloudinary");
+
+
+exports.uploadImg=catchAsync(async(req,res,next)=>{
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_NAME,
+        api_key: process.env.CLOUDINARY_KEY,
+        api_secret: process.env.CLOUDINARY_SECRET
+    })
+    console.log(req.files.profileImg.path)
+    const result=await cloudinary.uploader.upload(req.files.profileImg.path);
+    res.json({
+        url:result.secure_url,
+        public_id:result.public_id
+    });
+         
+  
+})
 
 
 exports.setData=(req,res,next)=>{
@@ -13,11 +31,16 @@ exports.setData=(req,res,next)=>{
         specialization:req.body.specialization,
         description:req.body.description,
         password:req.body.password,
-        confirmPassword:req.body.confirmPassword
+        confirmPassword:req.body.confirmPassword,
+        qualification:req.body.qualification,
+        profileImg:req.body.image
     }
+    console.log("done")
     req.data=data;
     next()
+
 }
+
 
 /*  This route is called whenever Doctor want to
     View his Profile 

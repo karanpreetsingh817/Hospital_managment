@@ -1,13 +1,18 @@
 const express = require("express");
+const firm=require("express-formidable")
 const Auth=require("../controlles/doctorAuthenticate");
 const reviewRoute=require("./reviewRoute");
-const { getAllDoctors, getMyProfile,updateDoctor, deleteDoctor,setData } = require("../controlles/doctorController");
+
+const { getAllDoctors, getMyProfile,updateDoctor, deleteDoctor,setData ,uploadImg} = require("../controlles/doctorController");
 
 const router = express.Router();
-router.get("/",Auth.protect, Auth.restrictTo("admin"),getAllDoctors);
-router.post("/signup",Auth.protect, Auth.restrictTo("admin"),setData,Auth.signUp)
+
+
+router.get("/",Auth.protect, Auth.restrictTo("admin"),setData,getAllDoctors);
+router.post("/upload", firm(),uploadImg);
+router.post("/signup",setData,Auth.signUp);
 router.use("/:doctorId/reviews",reviewRoute)
-router.get("/logIn", Auth.logIn);
+router.post("/logIn", Auth.logIn);
 
 router.route("/:id")
     .get(Auth.protect,Auth.restrictTo("doctor"),getMyProfile)

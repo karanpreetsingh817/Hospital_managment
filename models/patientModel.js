@@ -65,7 +65,8 @@ const patientSchema = new mongoose.Schema({
     type: Date
   },
   profilePhoto: {
-    type: String,
+   url:String,
+   public_key:String
   },
   reports:[
     {

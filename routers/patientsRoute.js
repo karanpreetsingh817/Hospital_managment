@@ -1,13 +1,14 @@
 const express = require("express");
+const firm=require("express-formidable")
 const Auth = require("../controlles/patientAuthenticate");
 const{getTodayAvailbleDoctors,getDoctorByName}=require("./../controlles/doctorController");
-const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData} = require("../controlles/patientController");
+const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData,uploadImg} = require("../controlles/patientController");
 const {getAllReports,postReport}=require("./../controlles/reportController");
 
 const router = express.Router();
 
-
-router.post("/signUp",setData, Auth.signUp);
+router.post("/upload", firm(),uploadImg);
+router.post("/signUp",Auth.restrictTo("admin"),setData, Auth.signUp);
 router.post("/logIn", Auth.logIn);
 router.post("/addReport",Auth.restrictTo("doctor"),postReport)
 
