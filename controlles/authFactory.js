@@ -97,6 +97,7 @@ exports.protect = (model) => catchAsync(async (req, res, next) => {
     next();
 });
 
+
 /*  This middleWare just Check whether a paarticuler Route
     is allow to User or not. If Not the return Error That
     You are not allow To do this action.
