@@ -14,10 +14,16 @@ const signToken = (id) =>
 
 const sendToken = (res, user) => {
     const token = signToken(user._id);
-    res.cookie("Jwt", token, {
-        httpOnly: true
-    })
     user.password = undefined;
+    const serializedUser = JSON.stringify(user);
+    res.cookie("Jwt", token, {
+        httpOnly: false,
+        sameSite: false,
+
+    }).cookie("user", serializedUser, {
+        httpOnly: false,
+        sameSite: false,
+    });
     res.status(200).json({
         status: "Successfull !",
         statusCode: 200,
@@ -34,12 +40,12 @@ const sendToken = (res, user) => {
 exports.signUp = (model) => catchAsync(async (req, res, next) => {
     console.log(req.data.profileImg);
     const user = await model.create(req.data);
-    console.log("done ho gya bhai")
 
     if (!user) {
         return next(new AppError(404, "errror ............"));
     }
     sendToken(res, user);
+   
 });
 
 /*  This is logIn route Controller Both for all user.
@@ -50,15 +56,15 @@ exports.logIn = (model) => catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return next(new AppError(404, "plz provide email and password"));
+        return next(new AppError(400, "Plz provide email and password"));
     }
     const user = await model.findOne({ email }).select("+password");
     if (!user) {
-        return next(new AppError(404, "user not found"));
+        return next(new AppError(400, "Email Or Password is incorrect!! Plz Fill Correct Email and Password and Try again "));
     }
     isVarified = await user.correctUser(password, user.password);
     if (!isVarified) {
-        return next(new AppError(404, "invalid password"));
+        return next(new AppError(400, "invalid password"));
     }
     sendToken(res, user, "You login  successfully");
 });
@@ -69,9 +75,11 @@ exports.logIn = (model) => catchAsync(async (req, res, next) => {
     an Error
 */
 exports.protect = (model) => catchAsync(async (req, res, next) => {
+  
+    
     let token;
-    if (req.headers.authentication && req.headers.authentication.startsWith("Bearer")) {
-        token = req.headers.authentication.split(" ")[1];
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+        token = req.headers.authorization.split(" ")[1];
     }
     if (!token) {
         return next(new AppError(401, "token is not valid!!!!"))
@@ -85,6 +93,7 @@ exports.protect = (model) => catchAsync(async (req, res, next) => {
         return next(new AppError(400, "User recentely Changed password!! Plz logIn again"));
     }
     req.User = isUser;
+    console.log(req.User)
     next();
 });
 

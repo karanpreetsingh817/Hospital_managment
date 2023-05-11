@@ -64,7 +64,7 @@ const patientSchema = new mongoose.Schema({
   passwordResetExpires: {
     type: Date
   },
-  profilePhoto: {
+  profileImg: {
    url:String,
    public_key:String
   },

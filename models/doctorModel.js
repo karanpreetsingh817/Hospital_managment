@@ -31,7 +31,7 @@ const doctorSchema = new mongoose.Schema({
     },
     specialization: {
         type: String,
-        require: [true, "Dr. must tell their specialization field so that petient can easily contract"],
+        required: [true, "Dr. must tell their specialization field so that petient can easily contract"],
     },
     description: {
         type: String,
