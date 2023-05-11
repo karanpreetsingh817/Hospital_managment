@@ -1,0 +1,241 @@
+[
+  {
+    "review": "Great service, highly recommended!",
+    "rating": 5
+  },
+  {
+    "review": "The food was good, but the service was slow.",
+    "rating": 3
+  },
+  {
+    "review": "Terrible experience, would not go back.",
+    "rating": 1
+  },
+  {
+    "review": "Amazing atmosphere and great drinks!",
+    "rating": 4
+  },
+  {
+    "review": "Decent food, but nothing special.",
+    "rating": 3
+  },
+  {
+    "review": "Service was excellent, but the food was just okay.",
+    "rating": 3
+  },
+  {
+    "review": "Worst meal I've ever had. Would not recommend.",
+    "rating": 1
+  },
+  {
+    "review": "Friendly staff and tasty food!",
+    "rating": 4
+  },
+  {
+    "review": "Overpriced for the quality of food and service.",
+    "rating": 2
+  },
+  {
+    "review": "Great value for the price! Highly recommend the specials.",
+    "rating": 5
+  },
+  {
+    "review": "Unimpressed with the food and service.",
+    "rating": 2
+  },
+  {
+    "review": "Fantastic experience from start to finish!",
+    "rating": 5
+  },
+  {
+    "review": "Average food, but the atmosphere was nice.",
+    "rating": 3
+  },
+  {
+    "review": "Would not recommend. Poor quality food and service.",
+    "rating": 1
+  },
+  {
+    "review": "Delicious food and great service!",
+    "rating": 4
+  },
+  {
+    "review": "The waitstaff was rude and unprofessional.",
+    "rating": 2
+  },
+  {
+    "review": "Incredible food and a great wine selection!",
+    "rating": 5
+  },
+  {
+    "review": "The atmosphere was nice, but the food was lacking.",
+    "rating": 2
+  },
+  {
+    "review": "Reasonable prices and good service.",
+    "rating": 4
+  },
+  {
+    "review": "The food was outstanding and the service was great!",
+    "rating": 5
+  },
+  {
+    "review": "Disappointing experience. Would not recommend.",
+    "rating": 2
+  },
+  {
+    "review": "Would recommend! Great food and friendly staff.",
+    "rating": 4
+  },
+  {
+    "review": "The food was terrible, but the drinks were good.",
+    "rating": 2
+  },
+  {
+    "review": "Amazing food and excellent service! Highly recommend.",
+    "rating": 5
+  },
+  {
+    "review": "Slow service, but the food was decent.",
+    "rating": 3
+  },
+  {
+    "review": "Would not go back. Overpriced and underwhelming.",
+    "rating": 2
+  },
+  {
+    "review": "Delicious food and good prices.",
+    "rating": 4
+  },
+  {
+    "review": "Terrible experience. The food was cold and the service was poor.",
+    "rating": 1
+  },
+  {
+    "review": "Great atmosphere and tasty food!",
+    "rating": 4
+  },
+  {
+    "review": "The service was excellent, but the food was not up to par.",
+    "rating": 3
+  },
+  
+    {
+      "review": "The service was slow, but the food was great.",
+      "rating": 4
+    },
+    {
+      "review": "Would not recommend. Mediocre food and poor service.",
+      "rating": 2
+    },
+    {
+      "review": "Excellent experience all around!",
+      "rating": 5
+    },
+    {
+      "review": "The food was overpriced and not very good.",
+      "rating": 2
+    },
+    {
+      "review": "Friendly staff and decent food.",
+      "rating": 3
+    },
+    {
+      "review": "Would go back for the drinks, but not for the food.",
+      "rating": 2
+    },
+    {
+      "review": "Amazing food and friendly service!",
+      "rating": 5
+    },
+    {
+      "review": "The atmosphere was lovely, but the food was disappointing.",
+      "rating": 2
+    },
+    {
+      "review": "Reasonable prices and tasty food.",
+      "rating": 4
+    },
+    {
+      "review": "Would not recommend. Terrible food and service.",
+      "rating": 1
+    },
+    {
+      "review": "Delicious food and great wine!",
+      "rating": 4
+    },
+    {
+      "review": "The service was fantastic, but the food was just okay.",
+      "rating": 3
+    },
+    {
+      "review": "Overpriced for the quality of food and service.",
+      "rating": 2
+    },
+    {
+      "review": "Fantastic experience! Would highly recommend.",
+      "rating": 5
+    },
+    {
+      "review": "The food was average, but the service was great.",
+      "rating": 3
+    },
+    {
+      "review": "Would not go back. Poor quality food and service.",
+      "rating": 1
+    },
+    {
+      "review": "Great food and reasonable prices!",
+      "rating": 4
+    },
+    {
+      "review": "The atmosphere was nice, but the food was lacking.",
+      "rating": 2
+    },
+    {
+      "review": "Service was slow, but the food was excellent!",
+      "rating": 4
+    },
+    {
+      "review": "Disappointing experience. Would not recommend.",
+      "rating": 2
+    },
+    {
+      "review": "Great food and friendly service.",
+      "rating": 4
+    },
+    {
+      "review": "The food was terrible, but the service was good.",
+      "rating": 2
+    },
+    {
+      "review": "Amazing food and service! Would definitely go back.",
+      "rating": 5
+    },
+    {
+      "review": "The service was slow and the food was mediocre.",
+      "rating": 2
+    },
+    {
+      "review": "Would not go back. Overpriced and underwhelming.",
+      "rating": 2
+    },
+    {
+      "review": "Decent food and friendly staff.",
+      "rating": 3
+    },
+    {
+      "review": "Terrible experience. The food was cold and the service was terrible.",
+      "rating": 1
+    },
+    {
+      "review": "Great atmosphere and delicious food!",
+      "rating": 4
+    },
+    {
+      "review": "The service was excellent, but the food was not very good.",
+      "rating": 3
+    }
+  
+  
+]

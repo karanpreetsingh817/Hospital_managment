@@ -22,12 +22,12 @@ const reviewSchema=new mongoose.Schema({
     patientId:{
         type:mongoose.Schema.ObjectId,
         ref:"Patient",
-        required:[true,"Review Must Belongs To Patient "]
+        // required:[true,"Review Must Belongs To Patient "]
     },
     doctorId:{
         type:mongoose.Schema.ObjectId,
         ref:"Doctor",
-        required:[true,"Review Must Belong To Doctor"]
+        // required:[true,"Review Must Belong To Doctor"]
     },
 },
 {

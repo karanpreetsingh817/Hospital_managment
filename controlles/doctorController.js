@@ -103,7 +103,6 @@ exports.deleteDoctor = handlerFactory.deleteOne(Doctor);
 
 exports.getDoctorByName = catchAsync(async (req, res) => {
     const {name}=req.body;
-    console.log(name)
     const doctor=await Doctor.find({name}).populate("reviews");
     if(!doctor){
         return next(new AppError(404,`there is no doctore with name ${name} in our Hospital`))
@@ -115,18 +114,48 @@ exports.getDoctorByName = catchAsync(async (req, res) => {
     });
 })
 
+
+// This route is for user to get all doctors 
+exports.getDoctorByName = catchAsync(async (req, res) => {
+    const doctors=await Doctor.find()
+    if(!doctor){
+        return next(new AppError(404,`there is no doctor with in our Sytem`))
+    }
+    res.status(200).json({
+        status: "success",
+        statusCode: 200,
+        result:doctors
+    });
+})
+
+
+
 /*  This Route is Called  when patient is trying to 
     Book appointment  and this Route controller is
     just show all Dopctor who are availble at that date
 */
 exports.getTodayAvailbleDoctors = catchAsync(async (req, res,next) => {
-    const doctor=await Doctor.find({ isAvailble:true });
+    const doctor=await Doctor.find();
     if(!doctor){
         return next(new AppError(400,"Sry there is no Doctor availabe today "));
     }
     res.status(200).json({
         status: "success",
+        message:"There is details of Todays doctor",
         statusCode: 200,
         result:doctor
     });
+});
+
+exports.getDoctorProfile=catchAsync(async(req,res,next)=>{
+    console.log(req.params.id)
+    const doctorDetails=await Doctor.findById(req.params.id);
+    if(!doctorDetails){
+        return next(new AppError("Sry there is a problem !! PLZ try again Later"));
+    }
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        result:doctorDetails
+    })
 });

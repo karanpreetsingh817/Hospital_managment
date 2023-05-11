@@ -3,35 +3,48 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const doctorsRoute = require("./routers/doctorsRoute");
 const patientsRoute = require("./routers/patientsRoute");
-const reportsRoute=require("./routers/reportRoute");
-const appointmentRoute=require("./routers/appointmentRoute");
-const globalErrorHandler=require("./controlles/errorController");
-const rateLimit=require("express-rate-limit");
-const helmet=require("helmet");
-const mongoSanitize=require("express-mongo-sanitize");
-const xss=require("xss-clean");
-const cors=require("cors")
+const reportsRoute = require("./routers/reportRoute");
+const appointmentRoute = require("./routers/appointmentRoute");
+const globalErrorHandler = require("./controlles/errorController");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const cors = require("cors")
 const cookieParser = require("cookie-parser");
 
 dotenv.config({ path: './config.env' });
 
 const app = express();
-app.use(cors())
-const limiter=rateLimit({
-    max:90,
-    windowMs:60*60*1000,
-    message:"your request limit exceeded..!!!! Plz try again after one hour"
+app.use(cookieParser())
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}
+app.use(allowCrossDomain)
+
+app.use(cors({
+   "origin" : "http://localhost:3000",
+    "credentials": true, 
+}));
+
+const limiter = rateLimit({
+    max: 90,
+    windowMs: 60 * 60 * 1000,
+    message: "your request limit exceeded..!!!! Plz try again after one hour"
 });
 
 app.use(require('body-parser').json());
-app.use(express.urlencoded({extended: true})); 
-app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }));
+
 app.use(mongoSanitize());
 
 app.use(xss());
 app.use(helmet());
 
-app.use("/v1",limiter);
+app.use("/v1", limiter);
 app.use(express.json());
 
 
@@ -43,12 +56,12 @@ mongoose.connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then(data => console.log("connection succsefully with atlas"))
-.catch(err => console.log("error error !!!"));
+    .then(data => console.log("connection succsefully with atlas"))
+    .catch(err => console.log("error error !!!"));
 
 // All routes define here
-app.use("/v1/report",reportsRoute);
-app.use("/v1/appointment",appointmentRoute)
+app.use("/v1/report", reportsRoute);
+app.use("/v1/appointment", appointmentRoute)
 app.use("/v1/doctor", doctorsRoute);
 app.use("/v1/patient", patientsRoute);
 

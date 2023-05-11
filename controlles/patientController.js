@@ -12,8 +12,8 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
         api_key: process.env.CLOUDINARY_KEY,
         api_secret: process.env.CLOUDINARY_SECRET
     })
-    console.log(req.files.profileImg.path)
-    const result=await cloudinary.uploader.upload(req.files.profileImg.path);
+    const path=await req.files.profileImg.path
+    const result=await cloudinary.uploader.upload(path);
     res.json({
         url:result.secure_url,
         public_id:result.public_id
@@ -54,6 +54,7 @@ exports.setData=(req,res,next)=>{
 /*  tHIS  route is handle request of Details of all Patients
     This request is noly valid for Admin
 */
+
 exports.getAllPatients=catchAsync(async(req,res,next)=>{
     let features=new Features(Patient.find(),req.query).filter().sort().fieldlimits().pagination();
     result = await features.query; 

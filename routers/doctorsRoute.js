@@ -8,11 +8,12 @@ const { getAllDoctors, getMyProfile,updateDoctor, deleteDoctor,setData ,uploadIm
 const router = express.Router();
 
 
-router.get("/",Auth.protect, Auth.restrictTo("admin"),setData,getAllDoctors);
+router.get("/",Auth.protect, Auth.restrictTo("admin"),getAllDoctors);
 router.post("/upload", firm(),uploadImg);
 router.post("/signup",setData,Auth.signUp);
 router.use("/:doctorId/reviews",reviewRoute)
 router.post("/logIn", Auth.logIn);
+router.patch("/updatePassword", Auth.protect, Auth.updatePassword)
 
 router.route("/:id")
     .get(Auth.protect,Auth.restrictTo("doctor"),getMyProfile)
