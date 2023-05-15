@@ -114,10 +114,10 @@ doctorSchema.pre("save",function(next){
     next();
 });
 
-doctorSchema.pre(/^find/, function(next){
-    this.find({active:true});
-    next();
-  });
+// doctorSchema.pre(/^find/, function(next){
+//     this.find({active:true});
+//     next();
+//   });
 
 doctorSchema.virtual("reviews",{
     ref:'Review',

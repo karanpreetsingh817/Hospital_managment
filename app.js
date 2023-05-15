@@ -31,7 +31,7 @@ app.use(cors({
 }));
 
 const limiter = rateLimit({
-    max: 90,
+    max: 900,
     windowMs: 60 * 60 * 1000,
     message: "your request limit exceeded..!!!! Plz try again after one hour"
 });
@@ -59,11 +59,31 @@ mongoose.connect(db, {
     .then(data => console.log("connection succsefully with atlas"))
     .catch(err => console.log("error error !!!"));
 
+
+
 // All routes define here
 app.use("/v1/report", reportsRoute);
+
+
 app.use("/v1/appointment", appointmentRoute)
+
+
 app.use("/v1/doctor", doctorsRoute);
+
 app.use("/v1/patient", patientsRoute);
+
+// app.get("/temp",(req,res)=>{
+//     res.setHeader("Access-Control-Allow-Origin", "*");
+//     res.setHeader("Cache-Control", "no-cache");
+//     res.setHeader("connection", "keep-alive");
+//     res.setHeader("Content-Type", "text/event-stream");
+//     let ct=0;
+//     setInterval(()=>{
+//         res.write(`data : ${ct}\n\n`);
+//         ct++;
+//     },2000)
+    
+// })
 
 // this gloal middleware is  handle unHandeled routes 
 app.all("*", (req, res, next) => {

@@ -18,10 +18,23 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
         url:result.secure_url,
         public_id:result.public_id
     });
-         
-  
 })
 
+
+exports.showProfile=catchAsync(async(req,res,next)=>{
+    const {patientId}=req.query;
+    patientId=new mongoose.Types.ObjectId(patientId)
+    const patient=await Patient.findById(patientId);
+
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"here detail of your Profile",
+        result:patient
+    });
+
+
+})
 
 const filterAllowed=(obj,...allowFields)=>{
     const newObj={};
@@ -86,15 +99,28 @@ exports.getMyProfile=catchAsync(async(req,res,next)=>{
     email of patient.
 */
 exports.updatePatient=catchAsync(async(req,res,next)=>{
+   
     const {password,confirmPassword}=req.body;
     if(password || confirmPassword){
         return next(new AppError(401,"this Route is not availale for updating password. For updating Password Plz visit /updatePassword route."))
     };
-    const filteredBody=filterAllowed(req.body,"name","email");
-    const patient=await Patient.findByIdAndUpdate(req.User.id,filteredBody,{
-        new:true,
-        runValidators:true
-    });
+
+    const patient=await Patient.findOne({_id:req.User._id});
+    console.log(patient)
+    patient.name=req.body.name|| patient.name;
+    patient.email=req.body.email || patient.email;
+
+    await Patient.save();
+    
+    console.log(patient)
+
+    if(req.body.name){
+        res.cookie("username", req.body.name, {
+            httpOnly: false,
+            sameSite: false,
+    
+        })
+    }
     res.status(200).json({
         status:"success",
         message:"user data has been updated",

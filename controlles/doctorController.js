@@ -13,6 +13,7 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
     })
     console.log(req.files.profileImg.path)
     const result=await cloudinary.uploader.upload(req.files.profileImg.path);
+    
     res.json({
         url:result.secure_url,
         public_id:result.public_id
@@ -33,7 +34,8 @@ exports.setData=(req,res,next)=>{
         password:req.body.password,
         confirmPassword:req.body.confirmPassword,
         qualification:req.body.qualification,
-        profileImg:req.body.image
+        profileImg:req.body.image,
+        appointmentFee:req.body.appointmentFee
     }
     console.log("done")
     req.data=data;
@@ -76,12 +78,20 @@ exports.getAllDoctors = catchAsync(async (req, res) => {
     THIS ROUTE  HANDLER is called .
 */
 exports.updateDoctor = catchAsync(async (req, res,next) => {
-    const doctor=await Doctor.findOne({name:req.body.name},);
+0
+    const doctor=await Doctor.findById(req.User._id);
     if(!doctor){
-        return next("doctor does't exist",404);
+        return next("doctor does't exist",404); 
     }
-    doctor.name=req.body.newName || req.body.name;
+    doctor.name=req.body.name || doctor.name;
     doctor.email=req.body.email || doctor.email;
+    if(req.body.name){
+        res.cookie("username", req.body.name, {
+            httpOnly: false,
+            sameSite: false,
+    
+        })
+    }
     await doctor.save({validateBeforeSave:false});
     res.status(200).json({
         status: "success",
@@ -148,8 +158,8 @@ exports.getTodayAvailbleDoctors = catchAsync(async (req, res,next) => {
 });
 
 exports.getDoctorProfile=catchAsync(async(req,res,next)=>{
-    console.log(req.params.id)
-    const doctorDetails=await Doctor.findById(req.params.id);
+   
+    const doctorDetails=await Doctor.findById(req.params.doctorId);
     if(!doctorDetails){
         return next(new AppError("Sry there is a problem !! PLZ try again Later"));
     }

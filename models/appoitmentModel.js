@@ -3,21 +3,24 @@ const mongoose=require("mongoose");
 
 const slotSchema=new mongoose.Schema({
     doctorId:{
-        type:mongoose.Schema.ObjectId,
+        type:mongoose.Types.ObjectId,
         ref:'Doctor'
     },
     patientId:{
-        type:mongoose.Schema.ObjectId,
+        type:mongoose.Types.ObjectId,
         ref:'Patient'  
     },
     bookedAt:{
         type:Date,
         default:Date.now()
     },
-    startTime:{
+    startHour:{
+        type:Number
+    },
+    timing:{
         type:String
     },
-    timeStamp:{
+    startMinute:{
         type:Number
     },
     appointmentStatus:{
@@ -32,20 +35,20 @@ const slotSchema=new mongoose.Schema({
     }   
 });
 
-slotSchema.pre('findMany', function(next) {
-    this.find({ patientId: { $ne: null } }); 
-    next();
-});
+// slotSchema.pre('findMany', function(next) {
+//     this.find({ patientId: { $ne: null } }); 
+//     next();
+// });
 
-slotSchema.pre('findOne', function(next) {
-    this.find({ patientId: { $ne: null } }); 
-    next();
-});
+// slotSchema.pre('findOne', function(next) {
+//     this.find({ patientId: { $ne: null } }); 
+//     next();
+// });
 
-slotSchema.pre("find", function(next){
-    this.find({ patientId: { $ne: null } }); 
-    next();
-});
+// slotSchema.pre("find", function(next){
+//     this.find({ patientId: { $ne: null } }); 
+//     next();
+// });
 
 const Slot=mongoose.model("Slot",slotSchema);
 

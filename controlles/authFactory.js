@@ -15,12 +15,36 @@ const signToken = (id) =>
 const sendToken = (res, user) => {
     const token = signToken(user._id);
     user.password = undefined;
-    const serializedUser = JSON.stringify(user);
+    
+    if(user.role==="doctor"){
+        res.cookie("role", "doc-profile", {
+            httpOnly: false,
+            sameSite: false,
+    
+        })
+        
+    }
+    if(user.role==="user"){
+        res.cookie("role", "profile", {
+            httpOnly: false,
+            sameSite: false,
+    
+        })
+
+    }
+    if(user.role==="admin"){
+        res.cookie("role", "admin", {
+            httpOnly: false,
+            sameSite: false,
+    
+        })
+    }
+   
     res.cookie("Jwt", token, {
         httpOnly: false,
         sameSite: false,
 
-    }).cookie("user", serializedUser, {
+    }).cookie("username", user.name, {
         httpOnly: false,
         sameSite: false,
     });
@@ -31,6 +55,7 @@ const sendToken = (res, user) => {
         result: token,
         user
     });
+
 }
 /*  
     This function is called whenever  add new Member to our website
@@ -66,7 +91,7 @@ exports.logIn = (model) => catchAsync(async (req, res, next) => {
     if (!isVarified) {
         return next(new AppError(400, "invalid password"));
     }
-    sendToken(res, user, "You login  successfully");
+    sendToken(res, user);
 });
 
 /*  This Route handler Actully check Who req in our system, Actully 
@@ -75,8 +100,7 @@ exports.logIn = (model) => catchAsync(async (req, res, next) => {
     an Error
 */
 exports.protect = (model) => catchAsync(async (req, res, next) => {
-  
-    
+
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
@@ -93,7 +117,7 @@ exports.protect = (model) => catchAsync(async (req, res, next) => {
         return next(new AppError(400, "User recentely Changed password!! Plz logIn again"));
     }
     req.User = isUser;
-    console.log(req.User)
+
     next();
 });
 

@@ -6,6 +6,6 @@ const router=express.Router({mergeParams:true});
 
 router.route("/")
     .get(patientAuth.protect, reviewController.getAllReview)
-    .post(patientAuth.protect,patientAuth.restrictTo("user"),reviewController.postReview);
+    .post(patientAuth.protect,patientAuth.restrictTo("user"),reviewController.isThereReview,reviewController.postReview);
 
 module.exports=router;

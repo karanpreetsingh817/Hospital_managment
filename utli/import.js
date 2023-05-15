@@ -21,7 +21,7 @@ const user_data=JSON.parse(fs.readFileSync(`${__dirname}/patientData.json`,'utf-
 
 const importAll=async()=>{
     try{
-        res=Tour.deleteMany();
+        res=await Tour.deleteMany();
 //    for(let user of review){
 //     res=await new Tour(user);
 //     res.save()
