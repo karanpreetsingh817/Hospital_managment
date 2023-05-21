@@ -26,7 +26,7 @@ var allowCrossDomain = function(req, res, next) {
 app.use(allowCrossDomain)
 
 app.use(cors({
-   "origin" : "http://localhost:3000",
+   "origin" : "http://172.174.139.118:3000",
     "credentials": true, 
 }));
 
