@@ -4,6 +4,7 @@ const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
 const handlerFactory=require("./handlerFactory")
 const cloudinary = require("cloudinary");
+const mongoose=require("mongoose")
 
 
 exports.uploadImg=catchAsync(async(req,res,next)=>{
@@ -18,8 +19,26 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
         url:result.secure_url,
         public_id:result.public_id
     });
-         
-  
+})
+
+
+
+
+exports.showProfile=catchAsync(async(req,res,next)=>{
+   console.log("tired");
+   
+    let {patientId}=req.query;
+    console.log(patientId)
+    patientId=new mongoose.Types.ObjectId(patientId)
+    const patient=await Patient.findById(patientId);
+    console.log(patient)
+
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"here detail of your Profile",
+        result:patient
+    });
 })
 
 
@@ -56,8 +75,9 @@ exports.setData=(req,res,next)=>{
 */
 
 exports.getAllPatients=catchAsync(async(req,res,next)=>{
-    let features=new Features(Patient.find(),req.query).filter().sort().fieldlimits().pagination();
-    result = await features.query; 
+    // let features=new Features(Patient.find(),req.query).filter().sort().fieldlimits().pagination();
+
+    result = await Patient.find();
     if(!result){
         return next(new Error(404,"404 Not Found"))
     }
@@ -86,15 +106,28 @@ exports.getMyProfile=catchAsync(async(req,res,next)=>{
     email of patient.
 */
 exports.updatePatient=catchAsync(async(req,res,next)=>{
+   
     const {password,confirmPassword}=req.body;
     if(password || confirmPassword){
         return next(new AppError(401,"this Route is not availale for updating password. For updating Password Plz visit /updatePassword route."))
     };
-    const filteredBody=filterAllowed(req.body,"name","email");
-    const patient=await Patient.findByIdAndUpdate(req.User.id,filteredBody,{
-        new:true,
-        runValidators:true
-    });
+
+    const patient=await Patient.findOne({_id:req.User._id});
+    console.log(patient)
+    patient.name=req.body.name|| patient.name;
+    patient.email=req.body.email || patient.email;
+
+    await Patient.save();
+    
+    console.log(patient)
+
+    if(req.body.name){
+        res.cookie("username", req.body.name, {
+            httpOnly: false,
+            sameSite: false,
+    
+        })
+    }
     res.status(200).json({
         status:"success",
         message:"user data has been updated",
@@ -116,5 +149,31 @@ exports.getTodaysPateints=catchAsync(async(req,res,next)=>{
         statusCode:200,
         message:"here details of Todays appointed patients",
         result:"todays patients"
+    });
+});
+
+exports.deleteOn=catchAsync(async (req, res,next) => {
+    console.log(req.params.id)
+    const document=await Patient.findByIdAndUpdate(req.params.id,{active:false});
+    res.status(200).json({
+        status: "success",
+        statusCode: 200,
+        message: "Document Deleted successfully",
+        result:document
+    });
+})
+
+
+
+exports.getPatientByName=catchAsync(async(req,res,next)=>{
+    const name=req.query.name;
+    console.log(name)
+    const patient=await Patient.find({name:name});
+    console.log(patient)
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"here detail of your Profile",
+        result:patient
     });
 });
