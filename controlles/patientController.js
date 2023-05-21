@@ -4,6 +4,7 @@ const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
 const handlerFactory=require("./handlerFactory")
 const cloudinary = require("cloudinary");
+const mongoose=require("mongoose")
 
 
 exports.uploadImg=catchAsync(async(req,res,next)=>{
@@ -21,10 +22,16 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
 })
 
 
+
+
 exports.showProfile=catchAsync(async(req,res,next)=>{
-    const {patientId}=req.query;
+   console.log("tired");
+   
+    let {patientId}=req.query;
+    console.log(patientId)
     patientId=new mongoose.Types.ObjectId(patientId)
     const patient=await Patient.findById(patientId);
+    console.log(patient)
 
     res.status(200).json({
         status:"successfull",
@@ -32,9 +39,8 @@ exports.showProfile=catchAsync(async(req,res,next)=>{
         message:"here detail of your Profile",
         result:patient
     });
-
-
 })
+
 
 const filterAllowed=(obj,...allowFields)=>{
     const newObj={};
@@ -69,8 +75,9 @@ exports.setData=(req,res,next)=>{
 */
 
 exports.getAllPatients=catchAsync(async(req,res,next)=>{
-    let features=new Features(Patient.find(),req.query).filter().sort().fieldlimits().pagination();
-    result = await features.query; 
+    // let features=new Features(Patient.find(),req.query).filter().sort().fieldlimits().pagination();
+
+    result = await Patient.find();
     if(!result){
         return next(new Error(404,"404 Not Found"))
     }
@@ -142,5 +149,31 @@ exports.getTodaysPateints=catchAsync(async(req,res,next)=>{
         statusCode:200,
         message:"here details of Todays appointed patients",
         result:"todays patients"
+    });
+});
+
+exports.deleteOn=catchAsync(async (req, res,next) => {
+    console.log(req.params.id)
+    const document=await Patient.findByIdAndUpdate(req.params.id,{active:false});
+    res.status(200).json({
+        status: "success",
+        statusCode: 200,
+        message: "Document Deleted successfully",
+        result:document
+    });
+})
+
+
+
+exports.getPatientByName=catchAsync(async(req,res,next)=>{
+    const name=req.query.name;
+    console.log(name)
+    const patient=await Patient.find({name:name});
+    console.log(patient)
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"here detail of your Profile",
+        result:patient
     });
 });

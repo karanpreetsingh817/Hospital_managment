@@ -1,8 +1,10 @@
 const express = require("express");
 const firm=require("express-formidable")
 const Auth = require("../controlles/patientAuthenticate");
+
+
 const{getTodayAvailbleDoctors,getDoctorByName,getAllDoctors,getDoctorProfile}=require("./../controlles/doctorController");
-const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData,uploadImg} = require("../controlles/patientController");
+const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData,uploadImg,deleteOne} = require("../controlles/patientController");
 const {getAllReports,postReport}=require("./../controlles/reportController");
 const appointmentController=require("../controlles/appointmentController")
 

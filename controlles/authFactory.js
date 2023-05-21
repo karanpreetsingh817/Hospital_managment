@@ -118,6 +118,8 @@ exports.protect = (model) => catchAsync(async (req, res, next) => {
     }
     req.User = isUser;
 
+   
+
     next();
 });
 

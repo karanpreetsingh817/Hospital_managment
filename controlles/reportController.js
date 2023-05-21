@@ -1,6 +1,7 @@
 const Report=require("./../models/reportsModel");
 const catchAsync = require("../utli/catchAsync");
 const AppError = require("../utli/appError");
+const mongoose=require("mongoose")
 
 /*  
     This Route handler Post new reports to Patients 
@@ -43,15 +44,29 @@ exports.getAllReports=catchAsync(async(req,res,next)=>{
     All reports of patient.
 */
 exports.getReportHistory=catchAsync(async(req,res,next)=>{
-    const reports=await Report.find({patientId:req.body.Id});
-    if(!reports){
-        return next(new AppError(401,"reports are not availale"))
-    }
+    const id=new mongoose.Types.ObjectId(req.params.patientId)
+    
+    const reports=await Report.find({patientId:id});
     res.status(200).json({
         status:"successfull",
         statusCode:200,
         message:"there is all reports of This Patient",
-        reports
+        result:reports
+    })
+
+})
+
+
+exports.getMineReport=catchAsync(async(req,res,next)=>{
+   
+    const id= req.User._id;
+    const reports=await Report.find({patientId:id});
+    console.log(reports)
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"there is all reports of This Patient",
+        result:reports
     })
 
 })

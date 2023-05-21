@@ -4,7 +4,7 @@ const Doctor = require("../models/doctorModel");
 const Patient = require("./../models/patientModel");
 const Slot = require("../models/appoitmentModel");
 const { add } = require("date-fns");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 /*  this is router controle to create slots of Appointment.Once doctor confirm that he 
     is available for next day or a particular day then this controller is called.Whenever 
@@ -24,7 +24,7 @@ exports.postSlots = catchAsync(async (req, res, next) => {
     const day = req.body.day;
     const month = req.body.month;
     const year = req.body.year;
-    const startHour = new Date(year, month, day, req.body.startHour,req.body.startMinute);
+    const startHour = new Date(year, month, day, req.body.startHour, req.body.startMinute);
     const endHour = new Date(year, month, day, req.body.endHour);
     const interval = req.body.interval || 30;
     const slots = [];
@@ -40,6 +40,7 @@ exports.postSlots = catchAsync(async (req, res, next) => {
         slots.push(slot);
 
     }
+    console.log(slots)
     await Slot.insertMany(slots);
     res.status(200).json({
         status: "success",
@@ -68,25 +69,33 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.allAppointment = catchAsync(async (req, res, next) => {
+
+
+    const appointment = await Slot.find({  patientId: { $ne: null } }).populate("doctorId").populate('patientId');
+    console.log(appointment)
+    if (!appointment) {
+        return next(new AppError(403, "Sry for incovinence!!! you are not able to make appointment at this momment"))
+    }
+    res.status(200).json({
+        status: "success",
+        message: "Your request for appointment is being under prrocess",
+        result: appointment
+    });
+});
+
+
+
 
 exports.getAppointmentByDate = catchAsync(async (req, res, next) => {
 
-
-    // const id =new mongoose.Types.ObjectId(doctorId)
     const { doctorId, timing } = req.query
     const id = new mongoose.Types.ObjectId(doctorId)
-
-    console.log(timing, id)
-    console.log("im here inside getappointmentbydate")
-
     const appointment = await Slot.find({ doctorId: id, timing: timing });
-    console.log(appointment)
-    // console.log(`Found ${appointment.length} appointment`, appointment);
 
     if (!appointment || appointment.length === 0) {
         return next(new AppError(404, 'No appointment found'));
     }
-
     res.status(200).json({
         status: 'success',
         message: 'Here are all the appointment',
@@ -102,6 +111,25 @@ exports.getAppointmentByDate = catchAsync(async (req, res, next) => {
 exports.getAllAppointments = catchAsync(async (req, res, next) => {
     const id = req.User._id;
     const appointments = await Slot.find({ doctorId: id, patientId: { $ne: null } }).populate("doctorId").populate('patientId');
+    if (appointments.length === 0) {
+        return res.status(200).json({
+            status: "successfull",
+            statusCode: 200,
+            message: "oh ho! there is no appintment for today",
+            result: "none"
+        });
+    }
+    res.status(200).json({
+        status: "successfull",
+        statusCode: 200,
+        message: "Here all appointment for you",
+        result: appointments
+    });
+});
+
+exports.getAllAppointment = catchAsync(async (req, res, next) => {
+    const id = req.User._id;
+    const appointments = await Slot.find({  patientId: id }).populate("doctorId").populate('patientId');
     if (appointments.length === 0) {
         return res.status(200).json({
             status: "successfull",
@@ -173,7 +201,7 @@ exports.getAllAppointments = catchAsync(async (req, res, next) => {
     then Doctor can Cancle the Appointment Just Searching By Time slot.
 */
 exports.cancleAppointment = catchAsync(async (req, res, next) => {
-    const appointment = await Slot.findOneAndUpdate({ timeStamp: req.body.timeStamp, status: "upcoming" }, { status: "cancle", patientId: null });
+    const appointment = await Slot.findByIdAndUpdate(req.body.id, { status: "cancled" });
     if (!appointment) {
         return next(new AppError(500, "sorry for problem you are facing right now! appointment is not Canclled right-now Plz try again "))
     }
@@ -325,28 +353,77 @@ exports.doneAppointment = catchAsync(async (req, res, next) => {
 
 
 exports.mineDoctors = catchAsync(async (req, res, next) => {
-    console.log(req.User)
     const patientId = req.User._id;
-    const slots = await Slot.aggregate([
+    let slots = await Slot.aggregate([
         { $match: { patientId: patientId } },
         {
             $group: {
                 _id: '$doctorId',
             }
         },
-        {
-            $lookup: {
-                from: 'Doctor',
-                localField: '_id',
-                foreignField: '_id',
-                as: 'doctor'
-            }
-        }
+
     ]).exec();
+    const Doctors = []
+  
+    for (let doctor of slots){
+        const doc = await Doctor.findById(doctor._id);
+        Doctors.push(doc)
+    }
     res.status(200).json({
         status: "successfull",
         statusCode: 200,
         message: "Appointment Updated successFully",
-        result: slots
+        result: Doctors
+        
     })
+})
+
+
+exports.minePatient = catchAsync(async (req, res, next) => {
+    const doctorId = req.User._id;
+    let slots = await Slot.aggregate([
+        { $match: { doctorId: doctorId } },
+        {
+            $group: {
+                _id: '$patientId',
+            }
+        },
+        { $match: { _id: { $ne: null } } }
+
+    ]).exec();
+    const Patients = []
+    for (let patient of slots){
+        const doc = await Patient.findById(patient._id);
+        Patients.push(doc)
+    }
+    res.status(200).json({
+        status: "successfull",
+        statusCode: 200,
+        message: "Appointment Updated successFully",
+        result: Patients
+        
+    })
+})
+
+exports.isCreated=catchAsync(async(req,res,next)=>{
+
+const timing=req.params.timing;
+const isCreated=await Slot.find({doctorId:req.User.id,timing:timing});
+if(isCreated.length>0)
+{
+    res.status(200).json({
+        status: "successfull",
+        statusCode: 200,
+        message: "Slots Already Created",
+        result: true
+        
+    })
+}
+res.status(200).json({
+    status: "successfull",
+    statusCode: 200,
+    message: "Appointment Updated successFully",
+    result: false
+    
+})
 })

@@ -3,26 +3,6 @@ const Review = require("./../models/reviewModel");
 const AppError = require("./../utli/appError");
 const mongoose = require("mongoose")
 
-// exports.getAllReview = catchAsync(async (req, res, next) => {
-//     let filter = {};
-//     if (req.params.doctorId){ 
-//         const id=new mongoose.Types.ObjectId(req.params.doctorId)
-//         filter = { doctorId: id };
-//         console.log(id)
-//     }
-    
-//     const reviews = await Review.find(filter);
-//     if (!reviews) {
-//         return next(new AppError(500, "There is a problem while Fetching the reviews at a Time! PLZ try again later"));
-//     }
-//     console.log(reviews)
-//     res.status(200).json({
-//         status: "Successfull",
-//         statusCode: 200,
-//         message: "Here all reviews",
-//         result: reviews
-//     })
-// });
 exports.getAllReview = catchAsync(async (req, res, next) => {
    
         let filter = {};
@@ -37,7 +17,6 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
         }
         
         const reviews = await Review.find(filter);
-        console.log(`Found ${reviews.length} reviews`,reviews);
         
         if (!reviews || reviews.length === 0) {
             return next(new AppError(404, 'No reviews found'));
@@ -51,25 +30,6 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
    
 });
 
-
-// exports.postReview = catchAsync(async (req, res, next) => {
-//     if (!req.body.doctorId) {
-//         const objectId = new mongoose.Types.ObjectId(req.params.doctorId);
-//         req.body.doctorId = objectId;
-//     }
-//     if (!req.body.patientId) req.body.patientId = req.User._id;
-//     req.body.rating = 1 * (req.body.rating);
-//     const newReview = await Review.create(req.body);
-//     if (!newReview) {
-//         return next(new AppError(500, " Sry for inconvience!! Create review after some time"))
-//     }
-//     res.status(200).json({
-//         status: "Successfull",
-//         statusCode: 200,
-//         message: "you successfully revied",
-//         result: newReview
-//     })
-// })
 
 exports.deleteReview = catchAsync(async (req, res, next) => {
     if (!req.body.doctorId) {
