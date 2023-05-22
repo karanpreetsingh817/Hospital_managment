@@ -3,8 +3,8 @@ const firm=require("express-formidable")
 const Auth = require("../controlles/patientAuthenticate");
 
 
-const{getTodayAvailbleDoctors,getDoctorByName,getAllDoctors,getDoctorProfile}=require("./../controlles/doctorController");
-const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData,uploadImg,deleteOne} = require("../controlles/patientController");
+const{getTodayAvailbleDoctors,getDoctorByName,getAllDoctors,getDoctorProfile, topRatedDoctor}=require("./../controlles/doctorController");
+const {getAllPatients,getMyProfile,deletePatient,updatePatient ,setData,uploadImg} = require("../controlles/patientController");
 const {getAllReports,postReport}=require("./../controlles/reportController");
 const appointmentController=require("../controlles/appointmentController")
 
@@ -17,6 +17,7 @@ router.post("/addReport",Auth.restrictTo("doctor"),postReport)
 
 router.get("/allAppointmentOfMine",Auth.protect,appointmentController.getAllAppointments)
 router.get("/",getAllPatients);
+router.get("/topDoctor",Auth.protect,topRatedDoctor);
 router.get("/findByName",Auth.protect,getDoctorByName)
 router.get("/alldoctor",Auth.protect,getAllDoctors)
 

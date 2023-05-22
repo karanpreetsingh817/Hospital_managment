@@ -19,7 +19,6 @@ exports.postSlots = catchAsync(async (req, res, next) => {
         return next(new AppError(500, "There is an error!! plz try again later"))
     }
     const doctorId = req.User._id;
-
     // const breakHourStarts=req.body.breakHour;
     const day = req.body.day;
     const month = req.body.month;
@@ -38,9 +37,7 @@ exports.postSlots = catchAsync(async (req, res, next) => {
             timing: `${day}/${month}/${year}`
         }
         slots.push(slot);
-
     }
-    console.log(slots)
     await Slot.insertMany(slots);
     res.status(200).json({
         status: "success",
@@ -69,9 +66,9 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
     });
 });
 
+
+
 exports.allAppointment = catchAsync(async (req, res, next) => {
-
-
     const appointment = await Slot.find({  patientId: { $ne: null } }).populate("doctorId").populate('patientId');
     console.log(appointment)
     if (!appointment) {
@@ -407,8 +404,8 @@ exports.minePatient = catchAsync(async (req, res, next) => {
 
 exports.isCreated=catchAsync(async(req,res,next)=>{
 
-const timing=req.params.timing;
-const isCreated=await Slot.find({doctorId:req.User.id,timing:timing});
+const timing=req.query.timing;
+const isCreated=await Slot.find({doctorId:req.User._id,timing:timing});
 if(isCreated.length>0)
 {
     res.status(200).json({

@@ -7,7 +7,7 @@ const appointmentController=require("./../controlles/appointmentController");
 const router=express.Router();
 
 
-router.post("/createSlots",authFactory.protect(Doctor),appointmentController.restrictTo("doctor"),appointmentController.postSlots);
+router.post("/createSlots",authFactory.protect(Doctor),appointmentController.restrictTo("doctor","admin"),appointmentController.postSlots);
 
 
 router.get("/allAppointmentOfMine",authFactory.protect(Doctor),appointmentController.getAllAppointments)
