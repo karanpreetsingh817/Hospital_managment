@@ -1,7 +1,7 @@
 const catchAsync = require("../utli/catchAsync");
 const AppError = require("../utli/appError");
 const Doctor = require("./../models/doctorModel");
-const handlerFactory = require("./handlerFactory");
+const Patient = require("../models/patientModel")
 const cloudinary = require("cloudinary");
 const Review = require("../models/reviewModel")
 const mongoose = require("mongoose")
@@ -50,7 +50,7 @@ exports.setData = (req, res, next) => {
     View his Profile 
  */
 exports.getMyProfile = catchAsync(async (req, res, next) => {
- const id=new mongoose.Types.ObjectId(req.params.id);
+    const id = new mongoose.Types.ObjectId(req.User._id);
     const myDetail = await Doctor.findById(id);
     if (!myDetail) {
         return next(new AppError("Sry there is a problem !! PLZ try again Later"));
@@ -82,7 +82,6 @@ exports.getAllDoctors = catchAsync(async (req, res) => {
     THIS ROUTE  HANDLER is called .
 */
 exports.updateDoctor = catchAsync(async (req, res, next) => {
-    0
     const doctor = await Doctor.findById(req.User._id);
     if (!doctor) {
         return next("doctor does't exist", 404);
@@ -109,14 +108,14 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
      we can delete Doctors details and This function
      is called 
 */
-exports.deleteOne=catchAsync(async (req, res,next) => {
+exports.deleteOne = catchAsync(async (req, res, next) => {
     console.log(req.params.id)
-    const document=await Doctor.findByIdAndUpdate(req.params.id,{active:false});
+    const document = await Doctor.findByIdAndUpdate(req.params.id, { active: false });
     res.status(200).json({
         status: "success",
         statusCode: 200,
         message: "Document Deleted successfully",
-        result:document
+        result: document
     });
 })
 
@@ -179,38 +178,128 @@ exports.getDoctorProfile = catchAsync(async (req, res, next) => {
 
 
 exports.getData = catchAsync(async (req, res, next) => {
-    let date = new Date();
-    let day = date.getDay();
-    let month = date.getMonth();
-    let year = date.getFullYear();
-    const timing = `${day}/${month}/${year}`;
-    const appointments = await Slot.find({ doctorId: req.User._id, patientId: { $ne: null } });
-    const todayAppointments = await Slot.find({ doctorId: req.User._id, patientId: { $ne: null }, timing: timing });
-    let patients = await Slot.aggregate([
-        { $match: { doctorId: req.User._id } },
-        {
-            $group: {
-                _id: '$patientId',
-            }
-        },
-        { $match: { _id: { $ne: null } } }
+    const result = {};
+    if (req.User.role === "doctor") {
+        let date = new Date();
+        let day = date.getDay();
+        let month = date.getMonth();
+        let year = date.getFullYear();
+        const timing = `${day}/${month}/${year}`;
+        result.appointments = await Slot.find({ doctorId: req.User._id, patientId: { $ne: null } });
+        result.todayAppointments = await Slot.find({ doctorId: req.User._id, patientId: { $ne: null }, timing: timing });
+        let patients = await Slot.aggregate([
+            { $match: { doctorId: req.User._id } },
+            {
+                $group: {
+                    _id: '$patientId',
+                }
+            },
+            { $match: { _id: { $ne: null } } }
 
-    ]).exec();
-    const todayCollection = (req.User.appointmentFee) * (todayAppointments.length);
-    const totalPatient = patients.length;
-    const totalCollection = (req.User.appointmentFee) * (appointments.length);
+        ]).exec();
+        result.todayCollection = (req.User.appointmentFee) * (todayAppointments.length);
+        result.totalPatient = patients.length;
+        result.totalCollection = (req.User.appointmentFee) * (appointments.length);
 
+    }
+
+    if (req.User.role === "admin") {
+        result.appointments = await Slot.find({ patientId: { $ne: null } });
+        result.patients = await Patient.find();
+        result.doctors = await Doctor.find();
+
+    }
     res.status(200).json({
         status: "successfull",
         statusCode: 200,
         message: "Appointment Updated successFully",
-        result: {
-            appointments,
-            todayAppointments,
-            todayCollection,
-            totalPatient,
-            totalCollection
-        }
+        result: result
     })
 })
 
+exports.updateDoc = catchAsync(async (req, res, next) => {
+    const filter = {
+        name: req.body.name,
+        email: req.body.email,
+        experience: req.body.experience,
+        specialization: req.body.specialization,
+        description: req.body.description,
+        qualification: req.body.qualification,
+        appointmentFee: req.body.appointmentFee
+    }
+    const id = req.body.id;
+
+    const DATA = await Doctor.findByIdAndUpdate(id, filter);
+    res.status(200).json({
+        status: "successfull",
+        statusCode: 200,
+        message: "doctor profile updated successfully",
+        result: DATA
+    })
+})
+
+
+exports.updatePat = catchAsync(async (req, res, next) => {
+    const filter = {
+        name: req.body.name,
+        email: req.body.email,
+        age: req.body.age,
+        address: req.body.address,
+        bloodGroup: req.body.bloodGroup,
+        phoneNumber: req.body.phoneNumber
+    }
+    const id = req.body.id;
+
+    const DATA = await Patient.findByIdAndUpdate(id, filter);
+    res.status(200).json({
+        status: "successfull",
+        statusCode: 200,
+        message: "doctor profile updated successfully",
+        result: DATA
+    })
+})
+
+exports.topRatedDoctor=catchAsync(async(req,res,next)=>{
+    const doctor=await Doctor.find().limit(3);
+    console.log(doctor)
+    // const doctorsWithRatings = await Review.aggregate([
+    //     {
+    //       $group: {
+    //         _id: '$doctorId',
+    //         averageRating: { $avg: '$rating' }
+    //       }
+    //     },
+    //     {
+    //       $sort: { averageRating: -1 }
+    //     },
+    //     {
+    //       $limit: 1
+    //     },
+    //     {
+    //       $lookup: {
+    //         from: 'doctors',
+    //         localField: '_id',
+    //         foreignField: '_id',
+    //         as: 'doctor'
+    //       }
+    //     },
+    //     {
+    //       $unwind: '$doctor'
+    //     },
+    //     {
+    //       $project: {
+    //         _id: '$doctor._id',
+    //         name: '$doctor.name',
+    //         averageRating: 1
+    //       }
+    //     }
+    //   ]);
+
+      res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"here toprated doctors",
+        result:doctor
+      })
+
+});

@@ -25,7 +25,6 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
 
 
 exports.showProfile=catchAsync(async(req,res,next)=>{
-   console.log("tired");
    
     let {patientId}=req.query;
     console.log(patientId)
@@ -155,6 +154,7 @@ exports.getTodaysPateints=catchAsync(async(req,res,next)=>{
 exports.deleteOn=catchAsync(async (req, res,next) => {
     console.log(req.params.id)
     const document=await Patient.findByIdAndUpdate(req.params.id,{active:false});
+    console.log(document);
     res.status(200).json({
         status: "success",
         statusCode: 200,
