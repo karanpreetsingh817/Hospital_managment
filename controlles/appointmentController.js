@@ -72,7 +72,7 @@ exports.allAppointment = catchAsync(async (req, res, next) => {
     const appointment = await Slot.find({  patientId: { $ne: null } }).populate("doctorId").populate('patientId');
     console.log(appointment)
     if (!appointment) {
-        return next(new AppError(403, "Sry for incovinence!!! you are not able to make appointment at this momment"))
+        return next(new AppError(404, "Sry for incovinence!!! you are not able to make appointment at this momment"))
     }
     res.status(200).json({
         status: "success",
@@ -125,16 +125,19 @@ exports.getAllAppointments = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllAppointment = catchAsync(async (req, res, next) => {
+    console.log("here")
     const id = req.User._id;
     const appointments = await Slot.find({  patientId: id }).populate("doctorId").populate('patientId');
+    console.log(appointments)
     if (appointments.length === 0) {
         return res.status(200).json({
             status: "successfull",
             statusCode: 200,
             message: "oh ho! there is no appintment for today",
-            result: "none"
+            result: appointments
         });
     }
+    console.log(appointments)
     res.status(200).json({
         status: "successfull",
         statusCode: 200,
@@ -408,13 +411,13 @@ const timing=req.query.timing;
 const isCreated=await Slot.find({doctorId:req.User._id,timing:timing});
 if(isCreated.length>0)
 {
-    res.status(200).json({
-        status: "successfull",
-        statusCode: 200,
-        message: "Slots Already Created",
-        result: true
-        
-    })
+   return ( res.status(200).json({
+    status: "successfull",
+    statusCode: 200,
+    message: "Slots Already Created",
+    result: true
+    
+}))
 }
 res.status(200).json({
     status: "successfull",

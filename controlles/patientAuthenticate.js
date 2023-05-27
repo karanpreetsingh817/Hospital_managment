@@ -1,9 +1,12 @@
 const Patient = require("../models/patientModel");
 const authFactory=require("./authFactory");
+const AppError =require("../utli/appError")
 
 exports.signUp = authFactory.signUp(Patient);
 exports.logIn = authFactory.logIn(Patient)
 exports.protect = authFactory.protect(Patient)
+exports.sendOtp=authFactory.genrateOtp;
+
 exports.restrictTo =(...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.User.role)) {

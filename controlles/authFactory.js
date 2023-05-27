@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const AppError = require("../utli/appError");
 const sendEmail = require("../utli/email");
 const { promisify } = require("util");
-
+const crypto = require("crypto");
 
 
 
@@ -63,14 +63,16 @@ const sendToken = (res, user) => {
     implimented Here.
 */
 exports.signUp = (model) => catchAsync(async (req, res, next) => {
-    console.log(req.data.profileImg);
-    const user = await model.create(req.data);
-
-    if (!user) {
-        return next(new AppError(404, "errror ............"));
+    const sessionOtp = req.session.otp; 
+    if(sessionOtp && sessionOtp == req.body.OTP){
+        const user = await model.create(req.data);
+        if (!user) {
+            return next(new AppError(404, "errror ............"));
+        }
+        sendToken(res, user);
+    }else{
+        return next(new AppError(403, 'Invalid OTP!'))
     }
-    sendToken(res, user);
-   
 });
 
 /*  This is logIn route Controller Both for all user.
@@ -78,6 +80,7 @@ exports.signUp = (model) => catchAsync(async (req, res, next) => {
     Then this RoutHandler comes into Picture
 */
 exports.logIn = (model) => catchAsync(async (req, res, next) => {
+  
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -89,7 +92,7 @@ exports.logIn = (model) => catchAsync(async (req, res, next) => {
     }
     isVarified = await user.correctUser(password, user.password);
     if (!isVarified) {
-        return next(new AppError(400, "invalid password"));
+        return next(new App2Error(400, "invalid password"));
     }
     sendToken(res, user);
 });
@@ -100,17 +103,17 @@ exports.logIn = (model) => catchAsync(async (req, res, next) => {
     an Error
 */
 exports.protect = (model) => catchAsync(async (req, res, next) => {
-
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
     }
     if (!token) {
-        return next(new AppError(401, "token is not valid!!!!"))
+        return next(new AppError(401, "token is not valid!!!!")) 
     }
     const decode = await promisify(jwt.verify)(token, process.env.SECERT_STR);
     const isUser = await model.findById(decode.id);
     if (!isUser) {
+
         return next(new AppError(400, "User  belonging to token is not exists"));
     }
     if (await isUser.validatePass(decode.iat)) {
@@ -118,10 +121,9 @@ exports.protect = (model) => catchAsync(async (req, res, next) => {
     }
     req.User = isUser;
 
-   
-
     next();
 });
+
 
 
 /*  This middleWare just Check whether a paarticuler Route
@@ -146,13 +148,33 @@ exports.forgetPassword = (model) => catchAsync(async (req, res, next) => {
     if (!user) {
         return next(new AppError(404, "Email is not registered"))
     }
+    let page;
+    if(user.role==="user"){
+        page="patientreset-pass"
+    }
+    if(user.role==="doctor" || user.role==="admin"){
+        page="doctorreset-pass"
+    }
     resetToken = user.createPassResetToken();
     await user.save({ validateBeforeSave: false });
-    const resetUrl = `${req.protocol}://${req.get("host")}/v1/patient/resetpassword/${resetToken}`;
-    const message = `Have you forget your password? here Password reset link.Click on link ${resetUrl} and reset your password.If you did't apply for reset Password Kindly ignore this email`;
+    const resetUrl = `${req.protocol}://localhost:3000/${page}/${resetToken}`;
+    const message =  `
+    Dear User,
+    
+    Have you forgotten your password? We're here to help you regain access to your account.
+    
+    To reset your password, please click on the following link:
+    ${resetUrl}
+    
+    If you didn't request a password reset, please ignore this email. Your account is still secure.
+    
+    Thank you for using HealthEase!
+    
+    Best regards,
+    HealthEase Team`;
     await sendEmail({
         email: user.email,
-        suject: "reset password link is valid for 10 min Only",
+        subject: "reset password link is valid for 10 min Only",
         message
     });
     res.status(200).send("your password reset link is send to your mail");
@@ -162,17 +184,20 @@ exports.forgetPassword = (model) => catchAsync(async (req, res, next) => {
     this Route will be called and user easily set Their new password .
 */
 exports.resetPassword = (model) => catchAsync(async (req, res, next) => {
-    resetHashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    resetHashedToken = crypto.createHash("sha256").update(req.body.token).digest("hex");
     const user = await model.findOne({ passwordResetToken: resetHashedToken, passwordResetExpires: { $gt: Date.now() } });
     if (!user) {
         return next(new AppError(401, "your token is expired plz make request for reset password again"))
     }
-    user.password = req.password;
+    console.log(user)
+    user.password = req.body.password;
     user.confirmPassword = undefined;
     user.passwordResetToken = undefined;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
-    await user.save();
+    console.log(user)
+    await user.save({ validateBeforeSave: false });
+    console.log(user)
     sendToken(res, user);
 });
 
@@ -197,3 +222,45 @@ exports.updatePassword = (model) => catchAsync(async (req, res, next) => {
     })
 })
 
+
+exports.genrateOtp=catchAsync(async(req,res,next)=>{
+    const Otp  = Math.floor(1000 + Math.random() * 9000);
+   
+    message=`
+    Dear ${req.body.name},
+
+    We hope this email finds you well. As part of our enhanced security measures, we are implementing a one-time password (OTP) verification process for your account. This added layer of security ensures that your personal information remains protected.
+    
+    To complete the verification process, please find your OTP details below:
+    
+    OTP: ${Otp}
+    
+    Please note that this OTP is valid for a limited time and should be used for verification purposes only. Do not share this OTP with anyone, including anyone claiming to be from our support team.
+    
+    If you did not initiate this request or believe it to be an error, please contact our support team immediately at [Customer Support Contact Details] so that we can assist you further.
+    
+    Thank you for your cooperation in this matter. We appreciate your commitment to account security.
+    
+    Best regards,
+    
+    Karanpreet Singh
+    HealthCare
+    healthease90009@gmail.com`
+
+    await sendEmail({
+        email: req.body.email,
+        subject: "Email verification",
+        message
+    });
+   
+    req.session.otp = Otp; 
+    req.session.save();
+    console.log(Otp,"---------------",req.session.otp)
+    res.status(200).json({
+        status:"successfull",
+        statusCode:200,
+        message:"Otp send to your mail successfully",
+        result:"done"
+    })
+    
+})

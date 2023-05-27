@@ -10,7 +10,6 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
             const id = new mongoose.Types.ObjectId(req.params.doctorId)
             if (mongoose.Types.ObjectId.isValid(req.params.doctorId)) {
                 filter = { doctorId: id };
-                console.log(`Filtering by doctorId: ${id}`);
             } else {
                 return next(new AppError(400, 'Invalid doctorId parameter'));
             }
@@ -50,19 +49,25 @@ exports.deleteReview = catchAsync(async (req, res, next) => {
     });
 })
 exports.postReview = catchAsync(async (req, res, next) => {
+   
     if (req.body.isThere) {
         const review = await Review.findOneAndUpdate({ doctorId: req.body.doctorId, patientId: req.body.patientId }, { review: req.body.review, rating: req.body.rating });
+        console.log(review)
+        return(
+    
         res.status(200).json({
             status: "success",
             statusCode: 200,
             message: "Review Updated successfully",
             result: review
-        });
+        }));
     }
     else {
+
         const newReview = await Review.create(req.body);
         if (!newReview) {
             return next(new AppError(500, " Sry for inconvience!! Create review after some time"))
+           
         }
         res.status(200).json({
             status: "Successfull",
@@ -89,3 +94,30 @@ exports.isThereReview = catchAsync(async (req, res, next) => {
     next()
 
 })
+
+
+exports.getMyReview = catchAsync(async (req, res, next) => {
+   
+    let filter = {};
+    if (req.params.doctorId) { 
+        const id = new mongoose.Types.ObjectId(req.params.doctorId)
+        if (mongoose.Types.ObjectId.isValid(req.params.doctorId)) {
+            filter = { doctorId: id ,patientId:req.User._id};
+        } else {
+            return next(new AppError(400, 'Invalid doctorId parameter'));
+        }
+    }
+    
+    const reviews = await Review.find(filter);
+    
+    if (!reviews || reviews.length === 0) {
+        return next(new AppError(404, 'No reviews found'));
+    }
+    
+    res.status(200).json({
+        status: 'success',
+        message: 'Here are all the reviews',
+        result: reviews[0]
+    });
+
+});

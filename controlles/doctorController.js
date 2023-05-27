@@ -13,9 +13,7 @@ exports.uploadImg = catchAsync(async (req, res, next) => {
         api_key: process.env.CLOUDINARY_KEY,
         api_secret: process.env.CLOUDINARY_SECRET
     })
-    console.log(req.files.profileImg.path)
     const result = await cloudinary.uploader.upload(req.files.profileImg.path);
-
     res.json({
         url: result.secure_url,
         public_id: result.public_id
@@ -180,6 +178,7 @@ exports.getDoctorProfile = catchAsync(async (req, res, next) => {
 exports.getData = catchAsync(async (req, res, next) => {
     const result = {};
     if (req.User.role === "doctor") {
+        console.log("here")
         let date = new Date();
         let day = date.getDay();
         let month = date.getMonth();
@@ -197,16 +196,15 @@ exports.getData = catchAsync(async (req, res, next) => {
             { $match: { _id: { $ne: null } } }
 
         ]).exec();
-        result.todayCollection = (req.User.appointmentFee) * (todayAppointments.length);
         result.totalPatient = patients.length;
-        result.totalCollection = (req.User.appointmentFee) * (appointments.length);
-
-    }
+        result.price=req.User.appointmentFee;
+    } 
 
     if (req.User.role === "admin") {
         result.appointments = await Slot.find({ patientId: { $ne: null } });
         result.patients = await Patient.find();
         result.doctors = await Doctor.find();
+      
 
     }
     res.status(200).json({

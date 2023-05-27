@@ -25,9 +25,9 @@ router.get("/isCreated",authFactory.protect(Doctor),appointmentController.isCrea
 router.patch("/bookAppointment",authFactory.protect(Patient),appointmentController.bookAppointment);
 router.patch("/cancleAppointment",authFactory.protect(Doctor),appointmentController.restrictTo("doctor"),appointmentController.cancleAppointment);
 router.patch("/cancleAppointmentP",authFactory.protect(Patient),appointmentController.cancleAppointment);
-router.patch("/makeAppointmentDone",authFactory.protect(Doctor),appointmentController.restrictTo("doctor"),appointmentController.doneAppointment);
+router.patch("/makeAppointmentDone",authFactory.protect(Doctor),appointmentController.doneAppointment);
 
-router.get("/findByPatientName",authFactory.protect(Doctor),appointmentController.restrictTo("doctor"),appointmentController.getAppointmentByName);
+router.get("/findByPatientName",authFactory.protect(Doctor),appointmentController.getAppointmentByName);
 
 module.exports=router
 

@@ -13,7 +13,8 @@ const reportSchema= new mongoose.Schema({
         default:Date.now
     },
     image:{
-        type:[String],
+        url:String,
+        public_id: String,
         // required:[true,"Plz update reports Image so that in future it can used"]
     },
     consultedBy:{
@@ -30,5 +31,4 @@ const reportSchema= new mongoose.Schema({
 });
 
 const Report=mongoose.model("Report",reportSchema);
-
 module.exports=Report;
