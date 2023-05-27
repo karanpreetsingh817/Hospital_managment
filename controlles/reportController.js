@@ -8,7 +8,14 @@ const mongoose=require("mongoose")
     data in our system by only restricted by Doctor.
 */
 exports.postReport=catchAsync(async(req,res,next)=>{
-    const newReport = await Report.create(req.body);
+    const newReport = await Report.create({
+        name:req.body.name,
+        medicine:req.body.medicine,
+        consultedBy:req.User.name,
+        description: req.body.description,
+        patientId:req.body.patientId,
+        image:req.body.image
+    });
     res.status(201).json({
         result:newReport,
         status:"sucessfull"

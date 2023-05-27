@@ -4,6 +4,7 @@ const reviewController=require("./../controlles/reviewController")
 
 const router=express.Router({mergeParams:true});
 
+router.get("/myReview",patientAuth.protect, reviewController.getMyReview)
 router.route("/")
     .get(patientAuth.protect, reviewController.getAllReview)
     .post(patientAuth.protect,patientAuth.restrictTo("user"),reviewController.isThereReview,reviewController.postReview);

@@ -11,7 +11,7 @@ router.get("/",authFactory.protect(Doctor),reportController.restrictTo("admin"),
 router.get("/yes",authFactory.protect(Patient),reportController.getMineReport)
 router.route("/:patientId")
     .get(authFactory.protect(Doctor),reportController.getReportHistory)
-    .post(authFactory.protect(Doctor),reportController.restrictTo("doctor"),reportController.postReport);
+    .post(authFactory.protect(Doctor),reportController.postReport);
 
 module.exports=router;
 // router.get("/myReports",authFactory.protect(Patient),reportController.restrictTo("user"),reportController.getReportHistory);

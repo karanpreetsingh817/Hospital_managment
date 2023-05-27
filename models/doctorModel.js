@@ -40,7 +40,6 @@ const doctorSchema = new mongoose.Schema({
     dateOfCreation: {
         type: Date,
         default: Date.now(),
-        select: false
     },
     profileImg: {
         url:String,

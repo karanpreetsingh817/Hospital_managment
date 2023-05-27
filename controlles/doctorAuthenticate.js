@@ -5,6 +5,7 @@ const AppError=require("./../utli/appError")
 exports.signUp = authFactory.signUp(Doctor);
 exports.logIn = authFactory.logIn(Doctor)
 exports.protect = authFactory.protect(Doctor)
+exports.sendOtp=authFactory.genrateOtp
 exports.restrictTo =(...roles)=> {
     return (req, res, next) => {
         if (!roles.includes(req.User.role)) {

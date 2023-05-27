@@ -1,6 +1,5 @@
 const catchAsync = require("../utli/catchAsync");
 const AppError = require("../utli/appError");
-const Features=require("./../utli/apiFeature");
 const Patient = require("../models/patientModel");
 const handlerFactory=require("./handlerFactory")
 const cloudinary = require("cloudinary");
@@ -22,10 +21,7 @@ exports.uploadImg=catchAsync(async(req,res,next)=>{
 })
 
 
-
-
-exports.showProfile=catchAsync(async(req,res,next)=>{
-   
+exports.showProfile=catchAsync(async(req,res,next)=>{ 
     let {patientId}=req.query;
     console.log(patientId)
     patientId=new mongoose.Types.ObjectId(patientId)
@@ -53,7 +49,6 @@ const filterAllowed=(obj,...allowFields)=>{
 
 
 exports.setData=(req,res,next)=>{
-    
     data={
         name: req.body.name,
         age: req.body.age,
@@ -78,7 +73,7 @@ exports.getAllPatients=catchAsync(async(req,res,next)=>{
 
     result = await Patient.find();
     if(!result){
-        return next(new Error(404,"404 Not Found"))
+        return next(new AppError(404,"404 Not Found"))
     }
     res.status(200).json({
         status: "Successfull",
@@ -105,28 +100,17 @@ exports.getMyProfile=catchAsync(async(req,res,next)=>{
     email of patient.
 */
 exports.updatePatient=catchAsync(async(req,res,next)=>{
-   
-    const {password,confirmPassword}=req.body;
-    if(password || confirmPassword){
-        return next(new AppError(401,"this Route is not availale for updating password. For updating Password Plz visit /updatePassword route."))
-    };
-
-    const patient=await Patient.findOne({_id:req.User._id});
+    const name=req.body.name|| patient.name;
+    const email=req.body.email || patient.email;
+    const patient=await Patient.findByIdAndUpdate(req.User._id,{name,email});
     console.log(patient)
-    patient.name=req.body.name|| patient.name;
-    patient.email=req.body.email || patient.email;
-
-    await Patient.save();
-    
-    console.log(patient)
-
-    if(req.body.name){
+    if(req.body.name && patient){
         res.cookie("username", req.body.name, {
             httpOnly: false,
             sameSite: false,
-    
         })
     }
+    console.log("after Save====>",patient)
     res.status(200).json({
         status:"success",
         message:"user data has been updated",
@@ -162,8 +146,6 @@ exports.deleteOn=catchAsync(async (req, res,next) => {
         result:document
     });
 })
-
-
 
 exports.getPatientByName=catchAsync(async(req,res,next)=>{
     const name=req.query.name;
