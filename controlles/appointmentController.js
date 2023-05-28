@@ -54,7 +54,6 @@ exports.postSlots = catchAsync(async (req, res, next) => {
 exports.bookAppointment = catchAsync(async (req, res, next) => {
     const slotId = req.body.id;
     const id = req.User._id;
-
     const appointment = await Slot.findOneAndUpdate({ _id: slotId, patientId: null }, { patientId: id, appointmentStatus: 'pending' });
     if (!appointment) {
         return next(new AppError(403, "Sry for incovinence!!! you are not able to make appointment at this momment"))
@@ -70,7 +69,6 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
 
 exports.allAppointment = catchAsync(async (req, res, next) => {
     const appointment = await Slot.find({  patientId: { $ne: null } }).populate("doctorId").populate('patientId');
-    console.log(appointment)
     if (!appointment) {
         return next(new AppError(404, "Sry for incovinence!!! you are not able to make appointment at this momment"))
     }
@@ -125,10 +123,8 @@ exports.getAllAppointments = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllAppointment = catchAsync(async (req, res, next) => {
-    console.log("here")
     const id = req.User._id;
     const appointments = await Slot.find({  patientId: id }).populate("doctorId").populate('patientId');
-    console.log(appointments)
     if (appointments.length === 0) {
         return res.status(200).json({
             status: "successfull",
@@ -137,7 +133,6 @@ exports.getAllAppointment = catchAsync(async (req, res, next) => {
             result: appointments
         });
     }
-    console.log(appointments)
     res.status(200).json({
         status: "successfull",
         statusCode: 200,

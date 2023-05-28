@@ -44,7 +44,8 @@ const sendToken = (res, user) => {
         httpOnly: false,
         sameSite: false,
 
-    }).cookie("username", user.name, {
+    })
+    res.cookie("username", user.name, {
         httpOnly: false,
         sameSite: false,
     });
@@ -80,7 +81,7 @@ exports.signUp = (model) => catchAsync(async (req, res, next) => {
     Then this RoutHandler comes into Picture
 */
 exports.logIn = (model) => catchAsync(async (req, res, next) => {
-  
+  console.log("logIn")
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -189,15 +190,13 @@ exports.resetPassword = (model) => catchAsync(async (req, res, next) => {
     if (!user) {
         return next(new AppError(401, "your token is expired plz make request for reset password again"))
     }
-    console.log(user)
     user.password = req.body.password;
     user.confirmPassword = undefined;
     user.passwordResetToken = undefined;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
-    console.log(user)
+
     await user.save({ validateBeforeSave: false });
-    console.log(user)
     sendToken(res, user);
 });
 
@@ -255,7 +254,6 @@ exports.genrateOtp=catchAsync(async(req,res,next)=>{
    
     req.session.otp = Otp; 
     req.session.save();
-    console.log(Otp,"---------------",req.session.otp)
     res.status(200).json({
         status:"successfull",
         statusCode:200,
