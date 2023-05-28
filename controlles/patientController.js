@@ -103,14 +103,12 @@ exports.updatePatient=catchAsync(async(req,res,next)=>{
     const name=req.body.name|| patient.name;
     const email=req.body.email || patient.email;
     const patient=await Patient.findByIdAndUpdate(req.User._id,{name,email});
-    console.log(patient)
     if(req.body.name && patient){
         res.cookie("username", req.body.name, {
             httpOnly: false,
             sameSite: false,
         })
     }
-    console.log("after Save====>",patient)
     res.status(200).json({
         status:"success",
         message:"user data has been updated",
@@ -136,7 +134,6 @@ exports.getTodaysPateints=catchAsync(async(req,res,next)=>{
 });
 
 exports.deleteOn=catchAsync(async (req, res,next) => {
-    console.log(req.params.id)
     const document=await Patient.findByIdAndUpdate(req.params.id,{active:false});
     console.log(document);
     res.status(200).json({
@@ -149,9 +146,7 @@ exports.deleteOn=catchAsync(async (req, res,next) => {
 
 exports.getPatientByName=catchAsync(async(req,res,next)=>{
     const name=req.query.name;
-    console.log(name)
     const patient=await Patient.find({name:name});
-    console.log(patient)
     res.status(200).json({
         status:"successfull",
         statusCode:200,

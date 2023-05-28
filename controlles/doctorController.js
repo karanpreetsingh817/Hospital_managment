@@ -107,7 +107,6 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
      is called 
 */
 exports.deleteOne = catchAsync(async (req, res, next) => {
-    console.log(req.params.id)
     const document = await Doctor.findByIdAndUpdate(req.params.id, { active: false });
     res.status(200).json({
         status: "success",
@@ -178,7 +177,6 @@ exports.getDoctorProfile = catchAsync(async (req, res, next) => {
 exports.getData = catchAsync(async (req, res, next) => {
     const result = {};
     if (req.User.role === "doctor") {
-        console.log("here")
         let date = new Date();
         let day = date.getDay();
         let month = date.getMonth();
@@ -259,7 +257,6 @@ exports.updatePat = catchAsync(async (req, res, next) => {
 
 exports.topRatedDoctor=catchAsync(async(req,res,next)=>{
     const doctor=await Doctor.find().limit(3);
-    console.log(doctor)
     // const doctorsWithRatings = await Review.aggregate([
     //     {
     //       $group: {

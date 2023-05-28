@@ -18,7 +18,7 @@ router.post("/signup",setData,Auth.signUp);
 router.get("/admin/:doctorId",getDoctorProfile)
 router.get("/getTickets", Auth.protect, Auth.restrictTo("admin"),getAllTicket)
 
-router.post("/postTicket",Auth.protect, Auth.restrictTo("admin"),postTicket)
+router.post("/postTicket",Auth.protect, Auth.restrictTo("admin","doctor"),postTicket)
 router.post("/sendOtp",Auth.sendOtp)
 router.patch("/resetPass", Auth.resetPassword)
 router.patch("/forgetPassword", Auth.forgetPassword);
